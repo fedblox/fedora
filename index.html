@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player - FEDORA</title>
+<link rel="icon" type="image/png" href="F-21-11-2026.png?v=2">
+<link rel="apple-touch-icon" href="F-21-11-2026.png?v=2">
+<style>
+* { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+body { margin: 0; background: #e3e3e3; color: #343434; }
+.navbar { background: linear-gradient(#1f65b3, #134682); border-bottom: 2px solid #0d325e; padding: 0 16px; min-height: 48px; display: flex; align-items: center; justify-content: space-between; color: #fff; flex-wrap: wrap; gap: 8px; }
+.nav-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.brand img { height: 34px; cursor: pointer; display: block; }
+.nav-link { color: #fff; font-weight: bold; font-size: 13px; cursor: pointer; padding: 12px 5px; text-decoration: none; }
+.nav-link:hover { background: rgba(255,255,255,0.15); }
+.search-box { display: flex; align-items: center; background: #fff; border-radius: 3px; overflow: hidden; border: 1px solid #0d325e; }
+.search-box input { border: none; padding: 5px 8px; font-size: 13px; width: 125px; outline: none; }
+.search-box button { background: #2eb82e; color: #fff; border: none; padding: 5px 10px; font-size: 12px; font-weight: bold; cursor: pointer; }
+.currency-bar { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: bold; }
+.curr-item { display: flex; align-items: center; gap: 5px; }
+.curr-icon { width: 18px; height: 18px; object-fit: contain; }
+.auth-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.45); color: #fff; font-size: 12px; font-weight: bold; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+.container { width: 920px; max-width: 96%; margin: 20px auto; }
+.card { background: #fff; border: 1px solid #ccc; padding: 18px; margin-bottom: 16px; }
+.profile-top { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.avatar-box { width: 180px; height: 180px; border: 1px solid #d4d4d4; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.avatar-box img { width: 100%; height: 100%; object-fit: contain; }
+.profile-info { flex: 1; min-width: 240px; }
+.username-row { display: flex; align-items: center; gap: 7px; margin: 0 0 8px; flex-wrap: wrap; }
+.username { font-size: 26px; font-weight: bold; margin: 0; color: #191919; }
+.verified-badge { width: 24px; height: 24px; object-fit: contain; }
+.social-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.soc-btn { background: #1f65b3; color: #fff; border: 1px solid #0d325e; padding: 5px 12px; font-size: 12px; font-weight: bold; border-radius: 3px; cursor: pointer; }
+.soc-btn.green { background: #2eb82e; border-color: #176b17; }
+.soc-btn.gray { background: #e0e0e0; color: #333; border-color: #bbb; }
+.bio-box { background: #f4f4f4; border: 1px solid #dcdcdc; padding: 10px 12px; font-size: 14px; color: #b30000; font-weight: bold; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.bio-edit-btn { background: #e0e0e0; border: 1px solid #bbb; color: #333; font-size: 12px; font-weight: bold; padding: 4px 10px; cursor: pointer; border-radius: 2px; }
+.bio-input { flex: 1; font-size: 14px; padding: 4px 8px; border: 1px solid #999; }
+.stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid #e0e0e0; padding-top: 12px; text-align: center; }
+.stat-label { font-size: 11px; color: #666; text-transform: uppercase; }
+.stat-val { font-size: 16px; font-weight: bold; color: #222; margin-top: 4px; }
+.tabs { display: flex; border-bottom: 2px solid #1f65b3; flex-wrap: wrap; }
+.tab-btn { background: #dcdcdc; border: 1px solid #bbb; border-bottom: none; padding: 10px 14px; font-size: 13px; font-weight: bold; cursor: pointer; margin-right: 4px; color: #333; }
+.tab-btn.active { background: #1f65b3; color: #fff; border-color: #1f65b3; }
+.tab-btn.admin-tab { background: #b30000; color: #fff; border-color: #800000; }
+.tab-btn.admin-tab.active { background: #800000; }
+.tab-content { background: #fff; border: 1px solid #ccc; border-top: none; padding: 24px; min-height: 180px; }
+.hidden { display: none !important; }
+.empty-msg { text-align: center; color: #888; font-size: 15px; padding: 40px 0; }
+.games-grid { display: flex; gap: 18px; flex-wrap: wrap; }
+.game-card { width: 170px; border: 1px solid #ccc; background: #fafafa; padding: 8px; border-radius: 3px; cursor: default; user-select: none; }
+.thumb-wrap { position: relative; width: 152px; height: 152px; border: 1px solid #ddd; background: #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.thumb-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.year-tag { position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.85); color: #fff; font-size: 11px; font-weight: bold; padding: 2px 5px; border-radius: 2px; }
+.game-title { font-size: 14px; font-weight: bold; color: #1f65b3; margin-top: 8px; }
+.game-sub { font-size: 12px; color: #2eb82e; font-weight: bold; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+.game-sub.offsale { color: #b30000; }
+.cat-btn { width: 100%; margin-top: 8px; padding: 7px; border: none; border-radius: 3px; font-size: 12px; font-weight: bold; cursor: pointer; color: #fff; background: #2eb82e; }
+.cat-btn.blue { background: #1f65b3; }
+.cat-btn.gray { background: #888; cursor: default; }
+.cat-btn.red { background: #b30000; }
+.badges-section { margin-top: 22px; border-top: 1px solid #e0e0e0; padding-top: 16px; }
+.badges-grid { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+.badge-item { width: 120px; text-align: center; border: 1px solid #e2e2e2; background: #fafafa; padding: 10px 8px; border-radius: 3px; }
+.badge-item img { width: 64px; height: 64px; object-fit: contain; display: block; margin: 0 auto 6px; }
+.badge-name { font-size: 12px; font-weight: bold; color: #333; }
+.download-grid { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+.dl-btn { display: inline-block; background: linear-gradient(#2eb82e, #1f8c1f); border: 1px solid #176b17; color: #fff; text-decoration: none; font-size: 16px; font-weight: bold; padding: 14px 26px; border-radius: 3px; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); cursor: pointer; }
+.dl-btn.secondary { background: linear-gradient(#1f65b3, #134682); border-color: #0d325e; }
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.admin-card { background: #f8f8f8; border: 1px solid #ccc; padding: 14px; border-radius: 4px; }
+.admin-card h4 { margin: 0 0 10px; color: #1f65b3; font-size: 14px; }
+.admin-card input, .admin-card select { width: 100%; padding: 7px 9px; margin-bottom: 8px; border: 1px solid #bbb; font-size: 13px; border-radius: 2px; }
+.adm-btn { background: #1f65b3; color: #fff; border: none; padding: 8px 12px; font-size: 12px; font-weight: bold; cursor: pointer; border-radius: 2px; margin-right: 4px; }
+.adm-btn.red { background: #b30000; }
+.adm-btn.green { background: #2eb82e; }
+.chat-box { border: 1px solid #bbb; background: #f9f9f9; border-radius: 4px; padding: 12px; margin-top: 16px; }
+.chat-msgs { height: 160px; overflow-y: auto; background: #fff; border: 1px solid #ddd; padding: 10px; margin-bottom: 8px; font-size: 13px; }
+.chat-row { display: flex; gap: 6px; }
+.chat-row input { flex: 1; padding: 8px; border: 1px solid #bbb; border-radius: 3px; }
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; z-index: 999; padding-top: 24px; }
+.modal-box { position: relative; background: #fff; border: 2px solid #999; width: 320px; max-width: 92%; padding: 38px 22px 20px; border-radius: 26px; box-shadow: 0 6px 20px rgba(0,0,0,0.35); text-align: center; }
+.modal-logo { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); height: 52px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
+.modal-box input { width: 100%; padding: 12px 16px; margin-bottom: 14px; border: 2px solid #aaa; border-radius: 22px; font-size: 16px; text-align: center; outline: none; }
+.modal-submit { width: 100%; background: linear-gradient(#2eb82e, #1f8c1f); border: 1px solid #176b17; color: #fff; padding: 10px; font-size: 15px; font-weight: bold; cursor: pointer; border-radius: 22px; margin-bottom: 10px; }
+.modal-pill-btn { width: 100%; background: #f5f5f5; border: 2px solid #aaa; color: #333; padding: 9px 14px; font-size: 14px; font-weight: bold; border-radius: 22px; cursor: pointer; }
+.ban-wrap { min-height: 100vh; background: #f7f8fa; padding: 24px 12px; display: flex; justify-content: center; align-items: flex-start; }
+.ban-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 16px; width: 460px; max-width: 100%; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.ban-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.ban-head-left { display: flex; align-items: center; gap: 10px; }
+.ban-circle { width: 24px; height: 24px; border: 2px solid #d93025; border-radius: 50%; color: #d93025; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+.ban-logo-img { height: 28px; object-fit: contain; }
+.ban-gray-box { background: #f1f2f5; border-radius: 12px; padding: 14px 16px; margin: 12px 0 18px; font-size: 14px; line-height: 1.5; }
+.ban-lbl { font-weight: bold; color: #222; display: block; margin-top: 8px; }
+.ban-lbl:first-child { margin-top: 0; }
+.ban-view-btn { width: 100%; background: #e2e4e9; border: none; border-radius: 8px; padding: 9px; font-weight: bold; font-size: 13px; color: #222; cursor: pointer; margin-top: 12px; }
+.ban-report-btn { width: 100%; background: #b8c7ff; border: none; border-radius: 10px; padding: 13px; font-weight: bold; font-size: 15px; color: #192b6b; cursor: pointer; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div id="ban-overlay" class="ban-wrap hidden">
+  <div class="ban-card">
+    <div class="ban-head">
+      <div class="ban-head-left">
+        <div class="ban-circle">&#8856;</div>
+        <strong style="font-size:20px;color:#111;">Banned</strong>
+        <img class="ban-logo-img" src="FED-RA-21-11-2026.png" alt="FEDORA">
+      </div>
+      <button onclick="logoutBanned()" style="background:none;border:none;font-size:20px;font-weight:bold;cursor:pointer;color:#444;" title="Log Out">&#8942;</button>
+    </div>
+    <p style="font-size:14px;color:#333;margin:0 0 16px;">We banned your account because of repeated or serious rule-breaking.</p>
+    <strong style="font-size:16px;color:#111;">What happened</strong>
+    <div class="ban-gray-box">
+      <span class="ban-lbl">Reason:</span><span id="ban-reason-text">Other</span>
+      <span class="ban-lbl">Moderator note:</span><span id="ban-note-text">Violation of FEDORA rules.</span>
+      <span class="ban-lbl">Duration:</span><span id="ban-duration-text">Permanent</span>
+    </div>
+    <strong style="font-size:16px;color:#111;">Latest activity we reviewed</strong>
+    <div class="ban-gray-box">
+      <span class="ban-lbl">Offensive item:</span><span id="ban-item-text">Account activity</span>
+      <div style="border-top:1px solid #dcdde2;margin:12px 0;"></div>
+      <span class="ban-lbl">Review date:</span><span id="ban-date-text">November 21, 2026</span>
+      <button class="ban-view-btn" onclick="alert('Moderation ID: ' + $('ban-uuid-text').textContent + '\nAccount: ' + currentUser)">View more</button>
+    </div>
+    <div id="ban-uuid-text" style="font-size:11px;color:#777;margin-bottom:8px;">821c77fe-f438-4f2e-8007-0f8c64c73388</div>
+    <button class="ban-report-btn" onclick="alert('Appeal submitted to FEDORA moderation.')">Report a mistake</button>
+    <div style="text-align:center;margin-top:12px;"><a href="#" onclick="logoutBanned();return false;" style="font-size:13px;color:#555;">Log Out / Switch Account</a></div>
+  </div>
+</div>
+<div id="main-app">
+<div class="navbar">
+  <div class="nav-left">
+    <a class="brand" onclick="viewMyProfile()"><img src="FED-RA-21-11-2026.png" alt="FEDORA"></a>
+    <a class="nav-link" onclick="viewMyProfile()">Profile</a>
+    <a class="nav-link" onclick="showTab('catalog')">Catalog</a>
+    <a class="nav-link" onclick="showTab('inventory')">Inventory</a>
+    <a class="nav-link" onclick="showTab('games')">games (WEB PLAY)</a>
+    <a class="nav-link" onclick="showTab('download')">Download</a>
+    <div class="search-box">
+      <input id="search-input" type="text" placeholder="Search users..." onkeydown="if(event.key==='Enter')searchUser()">
+      <button onclick="searchUser()">Search</button>
+    </div>
+  </div>
+  <div class="currency-bar">
+    <span class="curr-item" style="color:#66ff66;"><img class="curr-icon" src="IMG_1960.png" alt="R$"><span id="nav-robux">?</span></span>
+    <span class="curr-item" style="color:#ffcc33;"><img class="curr-icon" src="IMG_1961.png" alt="Tix"><span id="nav-tix">?</span></span>
+    <button id="return-admin-btn" class="auth-btn hidden" style="background:#b30000;" onclick="returnToAdmin()">Return to Admin</button>
+    <button id="auth-btn" class="auth-btn" onclick="openAuth()">Log In / Sign Up</button>
+  </div>
+</div>
+<div class="container">
+  <div class="card">
+    <div class="profile-top">
+      <div class="avatar-box"><img id="profile-avatar" src="IMG_1942.png" alt="Avatar"></div>
+      <div class="profile-info">
+        <div class="username-row">
+          <h1 class="username" id="profile-name">Player</h1>
+          <img id="badge-verified" class="verified-badge hidden" src="IMG_1952.png" alt="Verified">
+          <img id="badge-owner-f" class="verified-badge hidden" src="F-21-11-2026.png" alt="FEDORA">
+          <img id="badge-owner-3" class="verified-badge hidden" src="IMG_1968.png" alt="Builder">
+        </div>
+        <div id="social-actions" class="social-bar hidden">
+          <button id="btn-friend" class="soc-btn green" onclick="toggleFriend()">Add Friend</button>
+          <button id="btn-follow" class="soc-btn" onclick="toggleFollow()">Follow</button>
+          <button id="btn-chat-open" class="soc-btn gray hidden" onclick="toggleChatPanel()">Chat</button>
+        </div>
+        <div class="bio-box">
+          <span id="bio-text">[ Content Deleted ]</span>
+          <input id="bio-input" class="bio-input hidden" type="text" value="[ Content Deleted ]">
+          <button id="bio-btn" class="bio-edit-btn hidden" onclick="toggleBioEdit()">Edit</button>
+        </div>
+        <div class="stats-grid">
+          <div><div class="stat-label">Friends</div><div class="stat-val" id="stat-friends">0</div></div>
+          <div><div class="stat-label">Followers</div><div class="stat-val" id="stat-followers">0</div></div>
+          <div><div class="stat-label">Join Date</div><div class="stat-val" id="join-date">21/11/2026</div></div>
+          <div><div class="stat-label">Robux</div><div class="stat-val" id="stat-robux">?</div></div>
+          <div><div class="stat-label">Tix</div><div class="stat-val" id="stat-tix">?</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button id="btn-about" class="tab-btn active" onclick="showTab('about')">About</button>
+    <button id="btn-creations" class="tab-btn" onclick="showTab('creations')">Creations</button>
+    <button id="btn-catalog" class="tab-btn" onclick="showTab('catalog')">Catalog</button>
+    <button id="btn-inventory" class="tab-btn" onclick="showTab('inventory')">Inventory</button>
+    <button id="btn-games" class="tab-btn" onclick="showTab('games')">games (WEB PLAY)</button>
+    <button id="btn-download" class="tab-btn" onclick="showTab('download')">Download</button>
+    <button id="btn-admin" class="tab-btn admin-tab hidden" onclick="showTab('admin')">Admin Panel</button>
+  </div>
+  <div id="tab-about" class="tab-content">
+    <h3 id="about-heading" style="margin-top:0;">About Player</h3>
+    <p id="about-bio" style="color:#b30000;font-weight:bold;">[ Content Deleted ]</p>
+    <div id="friend-chat-panel" class="chat-box hidden">
+      <strong style="color:#1f65b3;">Friend Chat with <span id="chat-target-name"></span></strong>
+      <div id="chat-messages" class="chat-msgs"></div>
+      <div class="chat-row">
+        <input id="chat-input" type="text" placeholder="Say something..." onkeydown="if(event.key==='Enter')sendFriendChat()">
+        <button class="adm-btn green" onclick="sendFriendChat()">Send</button>
+      </div>
+    </div>
+    <div class="badges-section">
+      <h4 style="margin:0;">FEDORA Badges</h4>
+      <div class="badges-grid">
+        <div id="badge-card-admin" class="badge-item hidden"><img src="oldAdminLogo.png" alt="Administrator"><div class="badge-name">Administrator</div></div>
+        <div id="badge-card-club" class="badge-item"><img src="IMG_1969.png" alt="Welcome To The Club!"><div class="badge-name">Welcome To The Club!</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="tab-creations" class="tab-content hidden">
+    <div id="no-creations-msg" class="empty-msg">This user has no creations.</div>
+    <div id="featured-games-grid" class="games-grid hidden">
+      <div class="game-card"><div class="thumb-wrap"><img src="IMG_1957.png" alt="place.rbxl"><span class="year-tag">2021</span></div><div class="game-title">place.rbxl</div><div class="game-sub" style="color:#777;font-weight:normal;">Play on FEDORA App</div></div>
+      <div class="game-card"><div class="thumb-wrap"><img src="IMG_1958.png" alt="happy home"><span class="year-tag">2014</span></div><div class="game-title">happy home</div><div class="game-sub" style="color:#777;font-weight:normal;">Play on FEDORA App</div></div>
+    </div>
+  </div>
+  <div id="tab-catalog" class="tab-content hidden">
+    <h3 style="margin-top:0;">FEDORA Catalog</h3>
+    <div id="catalog-msg" style="font-size:13px;font-weight:bold;color:#1f8c1f;margin-bottom:12px;"></div>
+    <div id="catalog-grid" class="games-grid"></div>
+  </div>
+  <div id="tab-inventory" class="tab-content hidden">
+    <h3 style="margin-top:0;">My Inventory</h3>
+    <div id="inventory-grid" class="games-grid"></div>
+  </div>
+  <div id="tab-games" class="tab-content hidden">
+    <h3 style="margin-top:0;">Games (WEB PLAY)</h3>
+    <p style="font-size:15px;line-height:1.5;">We Cannot Show the games from the clients 2014, 2016 and 2021 sorry for this inconvenience! Instead you can play online here or download the 2021 app!</p>
+    <button class="dl-btn secondary" onclick="openWebPlay()">Play</button>
+  </div>
+  <div id="tab-download" class="tab-content hidden">
+    <h3 style="margin-top:0;">Download FEDORA Clients</h3>
+    <p>Select your client version below to download the Android APK:</p>
+    <div class="download-grid">
+      <button class="dl-btn" onclick="openGofile('GQY7QToz')">2014 download</button>
+      <button class="dl-btn secondary" onclick="openGofile('DYAblytL')">2021 download</button>
+    </div>
+  </div>
+  <div id="tab-admin" class="tab-content hidden">
+    <h3 style="margin-top:0;color:#b30000;">FEDORA Administrator Panel</h3>
+    <div id="admin-status" style="font-size:13px;font-weight:bold;color:#1f8c1f;margin-bottom:12px;"></div>
+    <div class="admin-grid">
+      <div class="admin-card">
+        <h4>1. Impersonate / Log Into User</h4>
+        <input id="adm-login-user" type="text" placeholder="Target Username (no password)">
+        <button class="adm-btn green" onclick="adminImpersonate()">Log Into User</button>
+      </div>
+      <div class="admin-card">
+        <h4>2. Set Robux &amp; Tix</h4>
+        <input id="adm-curr-user" type="text" placeholder="Username">
+        <input id="adm-robux-val" type="text" placeholder="Robux amount (e.g. 5000 or 83.5M)">
+        <input id="adm-tix-val" type="text" placeholder="Tix amount (e.g. 1000 or 45K)">
+        <button class="adm-btn" onclick="adminSetCurrency()">Save Currency</button>
+      </div>
+      <div class="admin-card">
+        <h4>3. Ban / Unban User</h4>
+        <input id="adm-ban-user" type="text" placeholder="Username to Ban or Unban">
+        <input id="adm-ban-reason" type="text" placeholder="Reason (e.g. Other / Exploiting)">
+        <input id="adm-ban-note" type="text" placeholder="Moderator Note">
+        <input id="adm-ban-item" type="text" placeholder="Offensive Item">
+        <div style="display:flex;gap:6px;">
+          <input id="adm-ban-time" type="number" placeholder="Time (e.g. 5)" style="width:55%;">
+          <select id="adm-ban-unit" style="width:45%;"><option value="mins">Minutes</option><option value="hours">Hours</option><option value="days">Days</option><option value="perm">Permanent</option></select>
+        </div>
+        <button class="adm-btn red" onclick="adminBanUser()">Ban User</button>
+        <button class="adm-btn green" onclick="adminUnbanUser()">Unban User</button>
+        <div id="banned-list-box" style="margin-top:8px;font-size:12px;color:#555;"></div>
+      </div>
+      <div class="admin-card">
+        <h4>4. Change Username</h4>
+        <input id="adm-old-name" type="text" placeholder="Current Username">
+        <input id="adm-new-name" type="text" placeholder="New Username">
+        <button class="adm-btn" onclick="adminRenameUser()">Change Username</button>
+      </div>
+      <div class="admin-card">
+        <h4>5. Edit / Content Delete Bio</h4>
+        <input id="adm-bio-user" type="text" placeholder="Username">
+        <input id="adm-bio-text" type="text" placeholder="New Bio Text">
+        <button class="adm-btn" onclick="adminSetBio(false)">Set Bio</button>
+        <button class="adm-btn red" onclick="adminSetBio(true)">[ Content Deleted ]</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div id="auth-modal" class="modal-bg hidden">
+  <div class="modal-box">
+    <img class="modal-logo" src="FED-RA-21-11-2026.png" alt="FEDORA">
+    <div id="auth-title" style="font-size:14px;font-weight:bold;color:#1f65b3;margin-bottom:12px;">Log In to FEDORA</div>
+    <input id="auth-user" type="text" placeholder="Username">
+    <input id="auth-pass" type="password" placeholder="Password">
+    <div id="auth-err" style="color:#b30000;font-size:12px;margin-bottom:10px;font-weight:bold;"></div>
+    <button id="auth-submit-btn" class="modal-submit" onclick="submitAuth()">Log In</button>
+    <button id="auth-toggle-link" class="modal-pill-btn" onclick="toggleAuthMode()">no acc signup</button>
+    <div style="margin-top:10px;"><a href="#" onclick="closeAuth();return false;" style="font-size:12px;color:#666;text-decoration:none;">Close</a></div>
+  </div>
+</div>
+<script>
+const OWNER_NAME = 'Fedora';
+const OWNER_PASS = 'gtagMODDING';
+const JSONBIN_ID = '6b020479ffd5d16053d470a0';
+const JSONBIN_KEY = '$2a$10$FhFcxuLQJw8ubWGn5U2LLOpPb.VbWyNgBH.i/druD9pa.dE8hf5YC';
+const BAD_WORDS = ['nigger','retard','fedora is bad','fedora is ai','fedora is vibe coded'];
+const CATALOG_ITEMS = [
+  { id: 'invis_shaggy', name: 'invisible shaggy', price: 10, img: 'IMG_1978.png', avatar: 'invisShaggy.png', offsale: false },
+  { id: 'owner_fit', name: 'Fedora Owner Outfit', price: 0, img: 'IMG_1953.png', avatar: 'IMG_1953.png', offsale: true }
+];
+const $ = id => document.getElementById(id);
+const d = new Date();
+$('join-date').textContent = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+let isSignUp = false;
+let currentUser = localStorage.getItem('fedora_logged_user') || 'Player';
+let viewingUser = currentUser;
+let globalOwnerBio = localStorage.getItem('fedora_owner_bio') || '[ Content Deleted ]';
+
+function openWebPlay() { window.open('https://' + 'wb.site.je/?i=1', '_blank', 'noopener'); }
+function openGofile(code) { window.open('https://' + 'gofile.io/d/' + code, '_blank', 'noopener'); }
+function censorText(str) {
+  let out = str;
+  BAD_WORDS.forEach(w => {
+    const rx = new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    out = out.replace(rx, m => '#'.repeat(m.length));
+  });
+  return out;
+}
+function getUsers() {
+  const u = JSON.parse(localStorage.getItem('fedora_accounts') || '{}');
+  if (!u['Fedora']) u['Fedora'] = { pass: OWNER_PASS, bio: globalOwnerBio, robux: '83.5M', tix: '45K', friends: [], followers: [], inv: ['invis_shaggy','owner_fit'], equipped: 'owner_fit' };
+  if (!u['ROBLOX']) u['ROBLOX'] = { pass: OWNER_PASS, bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  if (!u['Player']) u['Player'] = { pass: '', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  Object.keys(u).forEach(k => {
+    u[k].friends = u[k].friends || [];
+    u[k].followers = u[k].followers || [];
+    u[k].inv = u[k].inv || [];
+    if (k === 'Fedora') {
+      if (!u[k].inv.includes('invis_shaggy')) u[k].inv.push('invis_shaggy');
+      if (!u[k].inv.includes('owner_fit')) u[k].inv.push('owner_fit');
+      if (u[k].equipped === undefined) u[k].equipped = 'owner_fit';
+    } else {
+      u[k].inv = u[k].inv.filter(id => id !== 'owner_fit');
+    }
+  });
+  return u;
+}
+function saveUsers(u) { localStorage.setItem('fedora_accounts', JSON.stringify(u)); }
+function isPrivileged(name) { return name === 'Fedora' || name === 'ROBLOX'; }
+function getAvatarSrc(username, userObj) {
+  if (userObj && userObj.equipped === 'invis_shaggy') return 'invisShaggy.png';
+  if (username === 'Fedora') return 'IMG_1953.png';
+  return 'IMG_1942.png';
+}
+function showTab(t) {
+  if (t === 'admin' && !isPrivileged(currentUser)) return;
+  ['about','creations','catalog','inventory','games','download','admin'].forEach(x => {
+    $('tab-' + x).classList.toggle('hidden', x !== t);
+    $('btn-' + x).classList.toggle('active', x === t);
+  });
+  if (t === 'admin') renderBannedList();
+  if (t === 'catalog') renderCatalog();
+  if (t === 'inventory') renderInventory();
+}
+function applyBio(v) {
+  const t = censorText((v || '').trim()) || '[ Content Deleted ]';
+  const del = t === '[ Content Deleted ]';
+  $('bio-text').textContent = t;
+  $('about-bio').textContent = t;
+  $('bio-text').style.color = del ? '#b30000' : '#343434';
+  $('about-bio').style.color = del ? '#b30000' : '#343434';
+}
+async function fetchGlobalOwnerBio() {
+  try {
+    const r = await fetch('https://jsonbin.io' + JSONBIN_ID + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
+    const data = await r.json();
+    if (data && data.record && data.record.bio) {
+      globalOwnerBio = data.record.bio;
+      localStorage.setItem('fedora_owner_bio', globalOwnerBio);
+      const u = getUsers(); u['Fedora'].bio = globalOwnerBio; saveUsers(u);
+      if (viewingUser === 'Fedora') applyBio(globalOwnerBio);
+    }
+  } catch (e) {}
+}
+async function saveGlobalOwnerBio(newBio) {
+  globalOwnerBio = newBio;
+  localStorage.setItem('fedora_owner_bio', newBio);
+  try {
+    await fetch('https://jsonbin.io' + JSONBIN_ID, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+      body: JSON.stringify({ bio: newBio })
+    });
+  } catch (e) {}
+}
+function checkBan() {
+  const users = getUsers(), rec = users[currentUser];
+  if (rec && rec.ban && !isPrivileged(currentUser)) {
+    if (rec.ban.until === 'perm' || Date.now() < rec.ban.until) {
+      $('main-app').classList.add('hidden');
+      $('ban-overlay').classList.remove('hidden');
+      $('ban-reason-text').textContent = rec.ban.reason || 'Other';
+      $('ban-note-text').textContent = rec.ban.note || 'Violation of FEDORA rules.';
+      $('ban-item-text').textContent = rec.ban.item || 'Account activity';
+      $('ban-date-text').textContent = rec.ban.date || new Date().toLocaleString();
+      $('ban-uuid-text').textContent = rec.ban.uuid || '821c77fe-f438-4f2e-8007-0f8c64c73388';
+      $('ban-duration-text').textContent = rec.ban.until === 'perm' ? 'Account Deleted (Permanent)' : 'Until ' + new Date(rec.ban.until).toLocaleString();
+      return true;
+    } else { delete rec.ban; saveUsers(users); }
+  }
+  $('ban-overlay').classList.add('hidden');
+  $('main-app').classList.remove('hidden');
+  return false;
+}
+function logoutBanned() {
+  if (currentUser === 'Player') { $('ban-overlay').classList.add('hidden'); $('main-app').classList.remove('hidden'); openAuth(); return; }
+  currentUser = 'Player'; viewingUser = 'Player'; localStorage.removeItem('fedora_logged_user'); render();
+}
+function renderCatalog() {
+  const users = getUsers(), me = users[currentUser] || { inv: [] };
+  $('catalog-grid').innerHTML = CATALOG_ITEMS.map(item => {
+    const owned = me.inv.includes(item.id);
+    const priceHtml = item.offsale ? '<div class="game-sub offsale">Offsale</div>' : '<div class="game-sub"><img src="IMG_1960.png" style="width:14px;height:14px;"> ' + (currentUser === 'Fedora' ? 'Free (Owner)' : item.price) + '</div>';
+    let btnHtml = '';
+    if (owned) btnHtml = '<button class="cat-btn blue" onclick="showTab(\'inventory\')">Owned (Open Inventory)</button>';
+    else if (item.offsale) btnHtml = '<button class="cat-btn gray" disabled>Offsale</button>';
+    else btnHtml = '<button class="cat-btn" onclick="buyCatalogItem(\'' + item.id + '\')">Buy (' + item.price + ' R$)</button>';
+    return '<div class="game-card"><div class="thumb-wrap"><img src="' + item.img + '" alt="' + item.name + '"></div><div class="game-title">' + item.name + '</div>' + priceHtml + btnHtml + '</div>';
+  }).join('');
+}
+function buyCatalogItem(id) {
+  if (currentUser === 'Player') { openAuth(); return; }
+  const item = CATALOG_ITEMS.find(x => x.id === id);
+  if (!item || item.offsale) return;
+  const users = getUsers(), me = users[currentUser];
+  if (me.inv.includes(id)) return;
+  if (currentUser !== 'Fedora') {
+    const bal = parseFloat(String(me.robux).replace(/[^0-9.]/g, ''));
+    if (isNaN(bal) || bal < item.price) { $('catalog-msg').style.color = '#b30000'; $('catalog-msg').textContent = 'Not enough Robux! (Need ' + item.price + ' R$)'; return; }
+    me.robux = String(bal - item.price);
+  }
+  me.inv.push(id); saveUsers(users);
+  $('catalog-msg').style.color = '#1f8c1f'; $('catalog-msg').textContent = 'Purchased ' + item.name + '! Check your Inventory to wear it.';
+  render(); renderCatalog();
+}
+function renderInventory() {
+  const users = getUsers(), me = users[currentUser] || { inv: [], equipped: null };
+  const ownedItems = CATALOG_ITEMS.filter(it => me.inv.includes(it.id));
+  if (!ownedItems.length) { $('inventory-grid').innerHTML = '<div class="empty-msg" style="width:100%;">Your inventory is empty. Visit the Catalog!</div>'; return; }
+  $('inventory-grid').innerHTML = ownedItems.map(item => {
+    const isWorn = me.equipped === item.id;
+    const btn = isWorn ? '<button class="cat-btn red" onclick="toggleEquip(\'' + item.id + '\')">Remove</button>' : '<button class="cat-btn" onclick="toggleEquip(\'' + item.id + '\')">Wear</button>';
+    return '<div class="game-card"><div class="thumb-wrap"><img src="' + item.img + '" alt="' + item.name + '"></div><div class="game-title">' + item.name + '</div><div class="game-sub">' + (isWorn ? 'Equipped' : 'In Inventory') + '</div>' + btn + '</div>';
+  }).join('');
+}
+function toggleEquip(id) {
+  if (currentUser === 'Player') { openAuth(); return; }
+  const users = getUsers(), me = users[currentUser];
+  if (!me || !me.inv.includes(id)) return;
+  me.equipped = (me.equipped === id) ? null : id;
+  saveUsers(users); render(); renderInventory();
+}
+function render() {
+  if (checkBan()) return;
+  const users = getUsers(), isPriv = isPrivileged(currentUser);
+  const isViewingOwner = viewingUser === 'Fedora', isViewingRoblox = viewingUser === 'ROBLOX';
+  const showNameBadges = isViewingOwner || isViewingRoblox;
+  const curData = users[currentUser] || { robux: '?', tix: '?', friends: [] };
+  const viewData = users[viewingUser] || { bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [] };
+  document.title = viewingUser + ' - FEDORA';
+  $('profile-name').textContent = viewingUser;
+  $('about-heading').textContent = 'About ' + viewingUser;
+  $('profile-avatar').src = getAvatarSrc(viewingUser, viewData);
+  $('nav-robux').textContent = curData.robux || '?';
+  $('nav-tix').textContent = curData.tix || '?';
+  $('stat-robux').textContent = viewData.robux || '?';
+  $('stat-tix').textContent = viewData.tix || '?';
+  $('stat-friends').textContent = viewData.friends.length;
+  $('stat-followers').textContent = viewData.followers.length;
+  ['badge-verified','badge-owner-f','badge-owner-3'].forEach(id => $(id).classList.toggle('hidden', !showNameBadges));
+  $('badge-card-admin').classList.toggle('hidden', !showNameBadges);
+  $('badge-card-club').classList.remove('hidden');
+  $('btn-admin').classList.toggle('hidden', !isPriv);
+  if (!isPriv && !$('tab-admin').classList.contains('hidden')) showTab('about');
+  $('return-admin-btn').classList.toggle('hidden', !localStorage.getItem('fedora_saved_admin'));
+  $('featured-games-grid').classList.toggle('hidden', !showNameBadges);
+  $('no-creations-msg').classList.toggle('hidden', showNameBadges);
+  $('bio-btn').classList.toggle('hidden', !(viewingUser === currentUser && currentUser !== 'Player'));
+  $('auth-btn').textContent = currentUser === 'Player' ? 'Log In / Sign Up' : 'Log Out (' + currentUser + ')';
+  const isOther = viewingUser !== currentUser;
+  $('social-actions').classList.toggle('hidden', !isOther);
+  if (isOther) {
+    const isFr = curData.friends.includes(viewingUser);
+    const isFol = viewData.followers.includes(currentUser);
+    $('btn-friend').textContent = isFr ? 'Unfriend' : 'Add Friend';
+    $('btn-friend').className = isFr ? 'soc-btn gray' : 'soc-btn green';
+    $('btn-follow').textContent = isFol ? 'Following' : 'Follow';
+    $('btn-follow').className = isFol ? 'soc-btn gray' : 'soc-btn';
+    $('btn-chat-open').classList.toggle('hidden', !isFr);
+    if (!isFr) $('friend-chat-panel').classList.add('hidden');
+    else renderChatMessages();
+  } else $('friend-chat-panel').classList.add('hidden');
+  applyBio(isViewingOwner ? globalOwnerBio : viewData.bio);
+  if (!$('tab-catalog').classList.contains('hidden')) renderCatalog();
+  if (!$('tab-inventory').classList.contains('hidden')) renderInventory();
+}
+function toggleFriend() {
+  if (currentUser === 'Player') { openAuth(); return; }
+  const users = getUsers();
+  const me = users[currentUser], them = users[viewingUser];
+  if (!me || !them) return;
+  const idx = me.friends.indexOf(viewingUser);
+  if (idx === -1) { me.friends.push(viewingUser); if (!them.friends.includes(currentUser)) them.friends.push(currentUser); }
+  else { me.friends.splice(idx, 1); them.friends = them.friends.filter(x => x !== currentUser); }
+  saveUsers(users); render();
+}
+function toggleFollow() {
+  if (currentUser === 'Player') { openAuth(); return; }
+  const users = getUsers(), them = users[viewingUser];
+  if (!them) return;
+  const idx = them.followers.indexOf(currentUser);
+  if (idx === -1) them.followers.push(currentUser);
+  else them.followers.splice(idx, 1);
+  saveUsers(users); render();
+}
+function toggleChatPanel() { $('friend-chat-panel').classList.toggle('hidden'); renderChatMessages(); }
+function chatKey() { return [currentUser, viewingUser].sort().join('__'); }
+function renderChatMessages() {
+  $('chat-target-name').textContent = viewingUser;
+  const all = JSON.parse(localStorage.getItem('fedora_chats') || '{}');
+  const msgs = all[chatKey()] || [];
+  $('chat-messages').innerHTML = msgs.length ? msgs.map(m => '<div><strong>' + m.from + ':</strong> ' + m.text + '</div>').join('') : '<span style="color:#888;">No messages yet. Say hi!</span>';
+  $('chat-messages').scrollTop = $('chat-messages').scrollHeight;
+}
+function sendFriendChat() {
+  const inp = $('chat-input'), raw = inp.value.trim(); if (!raw) return;
+  const clean = censorText(raw);
+  const all = JSON.parse(localStorage.getItem('fedora_chats') || '{}');
+  all[chatKey()] = all[chatKey()] || [];
+  all[chatKey()].push({ from: currentUser, text: clean });
+  localStorage.setItem('fedora_chats', JSON.stringify(all));
+  inp.value = ''; renderChatMessages();
+}
+function viewMyProfile() { viewingUser = currentUser; render(); showTab('about'); }
+function openAuth() {
+  if (currentUser !== 'Player') { currentUser = 'Player'; viewingUser = 'Player'; localStorage.removeItem('fedora_logged_user'); localStorage.removeItem('fedora_saved_admin'); render(); return; }
+  isSignUp = false; $('auth-title').textContent = 'Log In to FEDORA'; $('auth-submit-btn').textContent = 'Log In';
+  $('auth-toggle-link').textContent = 'no acc signup'; $('auth-err').textContent = ''; $('auth-user').value = ''; $('auth-pass').value = '';
+  $('auth-modal').classList.remove('hidden');
+}
+function closeAuth() { $('auth-modal').classList.add('hidden'); }
+function toggleAuthMode() {
+  isSignUp = !isSignUp;
+  $('auth-title').textContent = isSignUp ? 'Create FEDORA Account' : 'Log In to FEDORA';
+  $('auth-submit-btn').textContent = isSignUp ? 'Sign Up' : 'Log In';
+  $('auth-toggle-link').textContent = isSignUp ? 'have acc login' : 'no acc signup';
+  $('auth-err').textContent = '';
+}
+function submitAuth() {
+  const rawU = $('auth-user').value.trim(), p = $('auth-pass').value;
+  if (!rawU || !p) { $('auth-err').textContent = 'Enter a username and password.'; return; }
+  const users = getUsers(), taken = Object.keys(users).find(k => k.toLowerCase() === rawU.toLowerCase());
+  if (!isSignUp && (rawU.toLowerCase() === 'fedora' || rawU.toUpperCase() === 'ROBLOX')) {
+    if (p === OWNER_PASS) {
+      const exact = rawU.toLowerCase() === 'fedora' ? 'Fedora' : 'ROBLOX';
+      currentUser = exact; viewingUser = exact; localStorage.setItem('fedora_logged_user', exact); closeAuth(); render(); return;
+    } else { $('auth-err').textContent = 'Invalid username or password.'; return; }
+  }
+  const u = censorText(rawU);
+  if (u.includes('#')) { $('auth-err').textContent = 'Username blocked by FEDORA filter.'; return; }
+  if (isSignUp) {
+    if (u.toLowerCase() === 'fedora' || u.toLowerCase() === 'player' || u.toUpperCase() === 'ROBLOX' || taken) { $('auth-err').textContent = 'That username is already in use!'; return; }
+    users[u] = { pass: p, bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null }; saveUsers(users);
+    currentUser = u; viewingUser = u; localStorage.setItem('fedora_logged_user', u); closeAuth(); render();
+  } else {
+    if (!taken || users[taken].pass !== p) { $('auth-err').textContent = 'Invalid username or password.'; return; }
+    currentUser = taken; viewingUser = taken; localStorage.setItem('fedora_logged_user', taken); closeAuth(); render();
+  }
+}
+function searchUser() {
+  const q = $('search-input').value.trim(); if (!q) return;
+  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === q.toLowerCase());
+  if (match) viewingUser = match;
+  else { alert('User "' + q + '" not found.'); return; }
+  render(); showTab('about');
+}
+async function toggleBioEdit() {
+  const tx = $('bio-text'), ip = $('bio-input'), bt = $('bio-btn');
+  if (ip.classList.contains('hidden')) {
+    ip.value = tx.textContent; tx.classList.add('hidden'); ip.classList.remove('hidden'); bt.textContent = 'Save'; ip.focus();
+  } else {
+    const c = censorText(ip.value.trim()) || '[ Content Deleted ]';
+    applyBio(c); ip.classList.add('hidden'); tx.classList.remove('hidden'); bt.textContent = 'Edit';
+    const users = getUsers();
+    if (viewingUser === 'Fedora') { users['Fedora'].bio = c; saveUsers(users); await saveGlobalOwnerBio(c); }
+    else if (users[viewingUser]) { users[viewingUser].bio = c; saveUsers(users); }
+  }
+}
+function admMsg(m) { $('admin-status').textContent = m; }
+function adminImpersonate() {
+  if (!isPrivileged(currentUser)) return;
+  const target = $('adm-login-user').value.trim(); if (!target) return;
+  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase());
+  const finalName = match || target;
+  if (!users[finalName]) users[finalName] = { pass: '1234', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  saveUsers(users);
+  if (!localStorage.getItem('fedora_saved_admin')) localStorage.setItem('fedora_saved_admin', currentUser);
+  currentUser = finalName; viewingUser = finalName; localStorage.setItem('fedora_logged_user', finalName); render(); showTab('about');
+}
+function returnToAdmin() {
+  const adm = localStorage.getItem('fedora_saved_admin'); if (!adm) return;
+  localStorage.removeItem('fedora_saved_admin');
+  currentUser = adm; viewingUser = adm; localStorage.setItem('fedora_logged_user', adm); render(); showTab('admin');
+}
+function adminSetCurrency() {
+  if (!isPrivileged(currentUser)) return;
+  const target = $('adm-curr-user').value.trim(); if (!target) return;
+  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
+  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  if ($('adm-robux-val').value.trim()) users[match].robux = $('adm-robux-val').value.trim();
+  if ($('adm-tix-val').value.trim()) users[match].tix = $('adm-tix-val').value.trim();
+  saveUsers(users); render(); admMsg('Updated currency for ' + match);
+}
+function renderBannedList() {
+  const users = getUsers(), banned = Object.keys(users).filter(k => users[k].ban);
+  $('banned-list-box').innerHTML = banned.length ? '<strong>Banned:</strong> ' + banned.map(b => '<button class="adm-btn" style="padding:2px 6px;margin:2px;" onclick="quickUnban(\'' + b + '\')">Unban ' + b + '</button>').join('') : 'No active bans.';
+}
+function quickUnban(name) { const users = getUsers(); if (users[name]) { delete users[name].ban; saveUsers(users); admMsg('Unbanned ' + name); renderBannedList(); } }
+function adminBanUser() {
+  if (!isPrivileged(currentUser)) return;
+  const target = $('adm-ban-user').value.trim();
+  if (!target) { admMsg('Type a username first!'); return; }
+  if (isPrivileged(target)) { admMsg('Cannot ban Fedora or ROBLOX.'); return; }
+  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
+  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  const unit = $('adm-ban-unit').value, amt = parseFloat($('adm-ban-time').value) || 1;
+  const mult = unit === 'mins' ? 60000 : (unit === 'days' ? 86400000 : 3600000);
+  const until = unit === 'perm' ? 'perm' : Date.now() + amt * mult;
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c==='x'?r:(r&0x3|0x8)).toString(16); });
+  users[match].ban = {
+    reason: $('adm-ban-reason').value.trim() || 'Other',
+    note: $('adm-ban-note').value.trim() || 'Behavior is against our rules at FEDORA.',
+    item: $('adm-ban-item').value.trim() || 'Account activity',
+    date: new Date().toLocaleString('en-US', { month:'long', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' }),
+    uuid, until
+  };
+  saveUsers(users); renderBannedList(); admMsg('Banned ' + match + '!');
+}
+function adminUnbanUser() {
+  if (!isPrivileged(currentUser)) return;
+  const target = $('adm-ban-user').value.trim(), users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase());
+  if (match && users[match].ban) { delete users[match].ban; saveUsers(users); renderBannedList(); admMsg('Unbanned ' + match); }
+  else admMsg('No active ban found for ' + target);
+}
+function adminRenameUser() {
+  if (!isPrivileged(currentUser)) return;
+  const oldN = $('adm-old-name').value.trim(), newN = $('adm-new-name').value.trim();
+  if (!oldN || !newN || isPrivileged(oldN) || isPrivileged(newN)) return;
+  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === oldN.toLowerCase());
+  if (!match) { admMsg('User not found.'); return; }
+  users[newN] = users[match]; delete users[match]; saveUsers(users);
+  if (viewingUser === match) viewingUser = newN;
+  render(); admMsg('Renamed ' + match + ' to ' + newN);
+}
+async function adminSetBio(del) {
+  if (!isPrivileged(currentUser)) return;
+  const target = $('adm-bio-user').value.trim(); if (!target) return;
+  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
+  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  const val = del ? '[ Content Deleted ]' : (censorText($('adm-bio-text').value.trim()) || '[ Content Deleted ]');
+  users[match].bio = val; saveUsers(users);
+  if (match === 'Fedora') await saveGlobalOwnerBio(val);
+  render(); admMsg('Updated bio for ' + match);
+}
+render();
+fetchGlobalOwnerBio();
+</script>
+</body>
+</html>
