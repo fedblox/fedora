@@ -337,6 +337,7 @@ function todayStr() {
 }
 let isSignUp = false;
 let globalOwnerBio = localStorage.getItem('fedora_owner_bio') || '[ Content Deleted ]';
+let isSyncing = false;
 
 function openWebPlay() { window.open('https://' + 'wb.site.je/?i=1', '_blank', 'noopener'); }
 function openGofile(code) { window.open('https://' + 'gofile.io/d/' + code, '_blank', 'noopener'); }
@@ -352,15 +353,8 @@ function censorText(str) {
   });
   return out;
 }
-function getUsers() {
-  const u = JSON.parse(localStorage.getItem('fedora_accounts') || '{}');
+function normalizeUsers(u) {
   delete u['Player'];
-  if (!localStorage.getItem('fedora_guests_purged_v1')) {
-    Object.keys(u).forEach(k => { if (isGuestName(k)) delete u[k]; });
-    localStorage.setItem('fedora_guests_purged_v1', '1');
-    localStorage.setItem('fedora_guest_counter', '1');
-    saveUsers(u);
-  }
   if (!u['Fedora']) u['Fedora'] = { pass: OWNER_PASS, bio: globalOwnerBio, robux: '83.5M', tix: '45K', joined: '21/11/2026', friends: [], followers: [], inv: ['invis_shaggy','owner_fit'], equipped: 'owner_fit' };
   if (!u['ROBLOX']) u['ROBLOX'] = { pass: OWNER_PASS, bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: '21/11/2026', friends: [], followers: [], inv: [], equipped: null };
   u['Fedora'].joined = '21/11/2026';
@@ -381,7 +375,15 @@ function getUsers() {
   });
   return u;
 }
-function saveUsers(u) { localStorage.setItem('fedora_accounts', JSON.stringify(u)); }
+function getUsers() {
+  const u = JSON.parse(localStorage.getItem('fedora_accounts') || '{}');
+  return normalizeUsers(u);
+}
+function saveUsers(u, skipCloud) {
+  normalizeUsers(u);
+  localStorage.setItem('fedora_accounts', JSON.stringify(u));
+  if (!skipCloud) pushGlobalState();
+}
 let currentUser = localStorage.getItem('fedora_logged_user') || 'Visitor';
 if (currentUser === 'Player' || (isGuestName(currentUser) && !getUsers()[currentUser])) {
   currentUser = 'Visitor';
@@ -412,28 +414,53 @@ function applyBio(v) {
   $('bio-text').style.color = del ? '#b30000' : '#343434';
   $('about-bio').style.color = del ? '#b30000' : '#343434';
 }
-async function fetchGlobalOwnerBio() {
+async function syncFromCloud() {
+  if (isSyncing) return;
   try {
     const r = await fetch('https://jsonbin.io' + JSONBIN_ID + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
     const data = await r.json();
-    if (data && data.record && data.record.bio) {
-      globalOwnerBio = data.record.bio;
-      localStorage.setItem('fedora_owner_bio', globalOwnerBio);
-      const u = getUsers(); u['Fedora'].bio = globalOwnerBio; saveUsers(u);
-      if (viewingUser === 'Fedora') applyBio(globalOwnerBio);
+    const rec = data && data.record ? data.record : null;
+    if (!rec) return;
+    const localU = getUsers();
+    const cloudU = rec.users ? normalizeUsers(rec.users) : {};
+    const deleted = rec.deleted || [];
+    const merged = Object.assign({}, localU, cloudU);
+    deleted.forEach(dName => { delete merged[dName]; });
+    if (rec.bio && merged['Fedora']) {
+      globalOwnerBio = rec.bio;
+      merged['Fedora'].bio = rec.bio;
+      localStorage.setItem('fedora_owner_bio', rec.bio);
     }
+    if (rec.chats) {
+      const localC = JSON.parse(localStorage.getItem('fedora_chats') || '{}');
+      localStorage.setItem('fedora_chats', JSON.stringify(Object.assign({}, localC, rec.chats)));
+    }
+    saveUsers(merged, true);
+    render();
   } catch (e) {}
 }
-async function saveGlobalOwnerBio(newBio) {
-  globalOwnerBio = newBio;
-  localStorage.setItem('fedora_owner_bio', newBio);
+async function pushGlobalState(deletedUser) {
+  isSyncing = true;
   try {
+    const r = await fetch('https://jsonbin.io' + JSONBIN_ID + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
+    const data = await r.json();
+    const rec = (data && data.record) || {};
+    const cloudU = rec.users || {};
+    const localU = getUsers();
+    const deleted = new Set(rec.deleted || []);
+    if (deletedUser) deleted.add(deletedUser);
+    const merged = Object.assign({}, cloudU, localU);
+    deleted.forEach(dName => { delete merged[dName]; });
+    const localC = JSON.parse(localStorage.getItem('fedora_chats') || '{}');
+    const mergedChats = Object.assign({}, rec.chats || {}, localC);
+    const ownerBio = merged['Fedora'] ? merged['Fedora'].bio : globalOwnerBio;
     await fetch('https://jsonbin.io' + JSONBIN_ID, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
-      body: JSON.stringify({ bio: newBio })
+      body: JSON.stringify({ bio: ownerBio, users: merged, chats: mergedChats, deleted: Array.from(deleted) })
     });
   } catch (e) {}
+  isSyncing = false;
 }
 function renderSidebarUsers() {
   const users = getUsers();
@@ -469,14 +496,17 @@ function checkBan() {
 }
 function logoutBanned() {
   const users = getUsers();
+  let wipedName = null;
   if (users[currentUser] && users[currentUser].ban && users[currentUser].ban.until === 'perm') {
     if (!isPrivileged(currentUser)) {
+      wipedName = currentUser;
       delete users[currentUser];
       Object.values(users).forEach(acc => {
-        acc.friends = (acc.friends || []).filter(x => x !== currentUser);
-        acc.followers = (acc.followers || []).filter(x => x !== currentUser);
+        acc.friends = (acc.friends || []).filter(x => x !== wipedName);
+        acc.followers = (acc.followers || []).filter(x => x !== wipedName);
       });
-      saveUsers(users);
+      saveUsers(users, true);
+      pushGlobalState(wipedName);
     }
   }
   currentUser = 'Visitor'; viewingUser = 'Fedora';
@@ -569,7 +599,7 @@ function render() {
     if (!isFr) $('friend-chat-panel').classList.add('hidden');
     else renderChatMessages();
   } else $('friend-chat-panel').classList.add('hidden');
-  applyBio(isViewingOwner ? globalOwnerBio : viewData.bio);
+  applyBio(viewData.bio);
   renderSidebarUsers();
   if (!$('tab-catalog').classList.contains('hidden')) renderCatalog();
   if (!$('tab-inventory').classList.contains('hidden')) renderInventory();
@@ -608,7 +638,7 @@ function sendFriendChat() {
   all[chatKey()] = all[chatKey()] || [];
   all[chatKey()].push({ from: currentUser, text: clean });
   localStorage.setItem('fedora_chats', JSON.stringify(all));
-  inp.value = ''; renderChatMessages();
+  inp.value = ''; renderChatMessages(); pushGlobalState();
 }
 function viewMyProfile() { viewingUser = currentUser === 'Visitor' ? 'Fedora' : currentUser; render(); showTab('about'); }
 function createGuestAccount() {
@@ -649,9 +679,10 @@ function toggleAuthMode() {
   $('discord-gate').classList.toggle('hidden', !isSignUp);
   $('auth-err').textContent = '';
 }
-function submitAuth() {
+async function submitAuth() {
   const rawU = $('auth-user').value.trim(), p = $('auth-pass').value;
   if (!rawU || !p) { $('auth-err').textContent = 'Enter a username and password.'; return; }
+  await syncFromCloud();
   const users = getUsers(), taken = Object.keys(users).find(k => k.toLowerCase() === rawU.toLowerCase());
   if (!isSignUp && (rawU.toLowerCase() === 'fedora' || rawU.toUpperCase() === 'ROBLOX')) {
     if (p === OWNER_PASS) {
@@ -688,7 +719,7 @@ function searchUser() {
   else { alert('User "' + q + '" not found.'); return; }
   render(); showTab('about');
 }
-async function toggleBioEdit() {
+function toggleBioEdit() {
   if (isGuestName(currentUser) || currentUser === 'Visitor') return;
   const tx = $('bio-text'), ip = $('bio-input'), bt = $('bio-btn');
   if (ip.classList.contains('hidden')) {
@@ -697,8 +728,7 @@ async function toggleBioEdit() {
     const c = censorText(ip.value.trim()) || '[ Content Deleted ]';
     applyBio(c); ip.classList.add('hidden'); tx.classList.remove('hidden'); bt.textContent = 'Edit';
     const users = getUsers();
-    if (viewingUser === 'Fedora') { users['Fedora'].bio = c; saveUsers(users); await saveGlobalOwnerBio(c); }
-    else if (users[viewingUser]) { users[viewingUser].bio = c; saveUsers(users); }
+    if (users[viewingUser]) { users[viewingUser].bio = c; saveUsers(users); }
     renderSidebarUsers();
   }
 }
@@ -749,7 +779,8 @@ function adminBanUser() {
       acc.friends = (acc.friends || []).filter(x => x !== match);
       acc.followers = (acc.followers || []).filter(x => x !== match);
     });
-    saveUsers(users);
+    saveUsers(users, true);
+    pushGlobalState(match);
     if (viewingUser === match) viewingUser = 'Fedora';
     render(); renderBannedList();
     admMsg('Permanently deleted & wiped ' + match + ' from FEDORA!');
@@ -781,18 +812,18 @@ function adminRenameUser() {
   if (!oldN || !newN || isPrivileged(oldN) || isPrivileged(newN) || isGuestName(oldN)) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === oldN.toLowerCase());
   if (!match) { admMsg('User not found.'); return; }
-  users[newN] = users[match]; delete users[match]; saveUsers(users);
+  users[newN] = users[match]; delete users[match];
+  saveUsers(users, true); pushGlobalState(match);
   if (viewingUser === match) viewingUser = newN;
   render(); admMsg('Renamed ' + match + ' to ' + newN);
 }
-async function adminSetBio(del) {
+function adminSetBio(del) {
   if (!isPrivileged(currentUser)) return;
   const target = document.getElementById('adm-bio-user').value.trim(); if (!target) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
   if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: todayStr(), friends: [], followers: [], inv: [], equipped: null };
   const val = del ? '[ Content Deleted ]' : (censorText(document.getElementById('adm-bio-text').value.trim()) || '[ Content Deleted ]');
   users[match].bio = val; saveUsers(users);
-  if (match === 'Fedora') await saveGlobalOwnerBio(val);
   render(); admMsg('Updated bio for ' + match);
 }
 setInterval(() => {
@@ -806,8 +837,9 @@ setInterval(() => {
   saveUsers(users);
   render();
 }, 60000);
+setInterval(syncFromCloud, 8000);
 render();
-fetchGlobalOwnerBio();
+syncFromCloud();
 </script>
 </body>
 </html>
