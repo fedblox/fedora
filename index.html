@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Player - FEDORA</title>
+<title>Fedora - FEDORA</title>
 <link rel="icon" type="image/png" href="F-21-11-2026.png?v=2">
 <link rel="apple-touch-icon" href="F-21-11-2026.png?v=2">
 <style>
@@ -171,7 +171,7 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
       <div class="avatar-box"><img id="profile-avatar" src="IMG_1942.png" alt="Avatar"></div>
       <div class="profile-info">
         <div class="username-row">
-          <h1 class="username" id="profile-name">Guest 1</h1>
+          <h1 class="username" id="profile-name">Fedora</h1>
           <img id="badge-verified" class="verified-badge hidden" src="IMG_1952.png" alt="Verified">
           <img id="badge-owner-f" class="verified-badge hidden" src="F-21-11-2026.png" alt="FEDORA">
           <img id="badge-owner-3" class="verified-badge hidden" src="IMG_1968.png" alt="Builder">
@@ -189,7 +189,7 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
         <div class="stats-grid">
           <div><div class="stat-label">Friends</div><div class="stat-val" id="stat-friends">0</div></div>
           <div><div class="stat-label">Followers</div><div class="stat-val" id="stat-followers">0</div></div>
-          <div><div class="stat-label">Join Date</div><div class="stat-val" id="join-date">22/11/2026</div></div>
+          <div><div class="stat-label">Join Date</div><div class="stat-val" id="join-date">21/11/2026</div></div>
           <div><div class="stat-label">Robux</div><div class="stat-val" id="stat-robux">0</div></div>
           <div><div class="stat-label">Tix</div><div class="stat-val" id="stat-tix">0</div></div>
         </div>
@@ -206,7 +206,7 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
     <button id="btn-admin" class="tab-btn admin-tab hidden" onclick="showTab('admin')">Admin Panel</button>
   </div>
   <div id="tab-about" class="tab-content">
-    <h3 id="about-heading" style="margin-top:0;">About Guest 1</h3>
+    <h3 id="about-heading" style="margin-top:0;">About Fedora</h3>
     <p id="about-bio" style="color:#b30000;font-weight:bold;">[ Content Deleted ]</p>
     <div id="friend-chat-panel" class="chat-box hidden">
       <strong style="color:#1f65b3;">Friend Chat with <span id="chat-target-name"></span></strong>
@@ -318,6 +318,7 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
     <button id="guest-create-btn" class="modal-pill-btn" style="background:#e8f4ff;border-color:#1f65b3;color:#1f65b3;" onclick="createGuestAccount()">Create Guest Account</button>
     <div style="margin-top:4px;"><a href="#" onclick="closeAuth();return false;" style="font-size:12px;color:#666;text-decoration:none;">Close</a></div>
   </div>
+</div>
 <script>
 const OWNER_NAME = 'Fedora';
 const OWNER_PASS = 'gtagMODDING';
@@ -330,8 +331,10 @@ const CATALOG_ITEMS = [
   { id: 'owner_fit', name: 'Fedora Owner Outfit', price: 0, img: 'IMG_1953.png', avatar: 'IMG_1953.png', offsale: true }
 ];
 const $ = id => document.getElementById(id);
-const d = new Date();
-$('join-date').textContent = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+function todayStr() {
+  const d = new Date();
+  return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+}
 let isSignUp = false;
 let globalOwnerBio = localStorage.getItem('fedora_owner_bio') || '[ Content Deleted ]';
 
@@ -352,12 +355,21 @@ function censorText(str) {
 function getUsers() {
   const u = JSON.parse(localStorage.getItem('fedora_accounts') || '{}');
   delete u['Player'];
-  if (!u['Fedora']) u['Fedora'] = { pass: OWNER_PASS, bio: globalOwnerBio, robux: '83.5M', tix: '45K', friends: [], followers: [], inv: ['invis_shaggy','owner_fit'], equipped: 'owner_fit' };
-  if (!u['ROBLOX']) u['ROBLOX'] = { pass: OWNER_PASS, bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
+  if (!localStorage.getItem('fedora_guests_purged_v1')) {
+    Object.keys(u).forEach(k => { if (isGuestName(k)) delete u[k]; });
+    localStorage.setItem('fedora_guests_purged_v1', '1');
+    localStorage.setItem('fedora_guest_counter', '1');
+    saveUsers(u);
+  }
+  if (!u['Fedora']) u['Fedora'] = { pass: OWNER_PASS, bio: globalOwnerBio, robux: '83.5M', tix: '45K', joined: '21/11/2026', friends: [], followers: [], inv: ['invis_shaggy','owner_fit'], equipped: 'owner_fit' };
+  if (!u['ROBLOX']) u['ROBLOX'] = { pass: OWNER_PASS, bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: '21/11/2026', friends: [], followers: [], inv: [], equipped: null };
+  u['Fedora'].joined = '21/11/2026';
+  u['ROBLOX'].joined = '21/11/2026';
   Object.keys(u).forEach(k => {
     u[k].friends = u[k].friends || [];
     u[k].followers = u[k].followers || [];
     u[k].inv = u[k].inv || [];
+    if (!u[k].joined) u[k].joined = todayStr();
     if (isGuestName(k)) { u[k].robux = '0'; u[k].tix = '0'; u[k].friends = []; u[k].followers = []; u[k].inv = []; u[k].equipped = null; }
     else if (k === 'Fedora') {
       if (!u[k].inv.includes('invis_shaggy')) u[k].inv.push('invis_shaggy');
@@ -370,22 +382,12 @@ function getUsers() {
   return u;
 }
 function saveUsers(u) { localStorage.setItem('fedora_accounts', JSON.stringify(u)); }
-function nextGuestName() {
-  const u = getUsers();
-  let n = parseInt(localStorage.getItem('fedora_guest_counter') || '1', 10);
-  while (u['Guest ' + n]) n++;
-  localStorage.setItem('fedora_guest_counter', String(n + 1));
-  const name = 'Guest ' + n;
-  u[name] = { pass: '', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null, isGuest: true };
-  saveUsers(u);
-  return name;
+let currentUser = localStorage.getItem('fedora_logged_user') || 'Visitor';
+if (currentUser === 'Player' || (isGuestName(currentUser) && !getUsers()[currentUser])) {
+  currentUser = 'Visitor';
+  localStorage.removeItem('fedora_logged_user');
 }
-let currentUser = localStorage.getItem('fedora_logged_user');
-if (!currentUser || currentUser === 'Player') {
-  currentUser = nextGuestName();
-  localStorage.setItem('fedora_logged_user', currentUser);
-}
-let viewingUser = currentUser;
+let viewingUser = currentUser === 'Visitor' ? 'Fedora' : currentUser;
 
 function getAvatarSrc(username, userObj) {
   if (userObj && userObj.equipped === 'invis_shaggy') return 'invisShaggy.png';
@@ -439,7 +441,7 @@ function renderSidebarUsers() {
     const u = users[name];
     const bio = censorText((u.bio || '[ Content Deleted ]').trim()) || '[ Content Deleted ]';
     return '<div class="user-row-card" onclick="inspectUser(\'' + name.replace(/'/g, "\\'") + '\')">' +
-      '<div class="user-row-name">' + name + '</div>' +
+      '<div class="user-row-name">' + name + ' <span style="color:#777;font-weight:normal;font-size:10px;">(' + (u.joined || '21/11/2026') + ')</span></div>' +
       '<div class="user-row-bio">' + bio + '</div>' +
       '<div class="user-row-curr"><span style="color:#1f8c1f;">R$: ' + (u.robux || '0') + '</span><span style="color:#cc8800;">Tix: ' + (u.tix || '0') + '</span></div>' +
     '</div>';
@@ -448,7 +450,7 @@ function renderSidebarUsers() {
 function inspectUser(name) { viewingUser = name; render(); showTab('about'); }
 function checkBan() {
   const users = getUsers(), rec = users[currentUser];
-  if (rec && rec.ban && !isPrivileged(currentUser)) {
+  if (rec && rec.ban) {
     if (rec.ban.until === 'perm' || Date.now() < rec.ban.until) {
       $('main-app').classList.add('hidden');
       $('ban-overlay').classList.remove('hidden');
@@ -466,24 +468,35 @@ function checkBan() {
   return false;
 }
 function logoutBanned() {
-  const g = nextGuestName();
-  currentUser = g; viewingUser = g; localStorage.setItem('fedora_logged_user', g); render();
+  const users = getUsers();
+  if (users[currentUser] && users[currentUser].ban && users[currentUser].ban.until === 'perm') {
+    if (!isPrivileged(currentUser)) {
+      delete users[currentUser];
+      Object.values(users).forEach(acc => {
+        acc.friends = (acc.friends || []).filter(x => x !== currentUser);
+        acc.followers = (acc.followers || []).filter(x => x !== currentUser);
+      });
+      saveUsers(users);
+    }
+  }
+  currentUser = 'Visitor'; viewingUser = 'Fedora';
+  localStorage.removeItem('fedora_logged_user'); render();
 }
 function renderCatalog() {
-  const users = getUsers(), me = users[currentUser] || { inv: [] }, guest = isGuestName(currentUser);
+  const users = getUsers(), me = users[currentUser] || { inv: [] }, guest = isGuestName(currentUser) || currentUser === 'Visitor';
   $('catalog-grid').innerHTML = CATALOG_ITEMS.map(item => {
     const owned = me.inv.includes(item.id);
     const priceHtml = item.offsale ? '<div class="game-sub offsale">Offsale</div>' : '<div class="game-sub"><img src="IMG_1960.png" style="width:14px;height:14px;"> ' + (currentUser === 'Fedora' ? 'Free (Owner)' : item.price) + '</div>';
     let btnHtml = '';
     if (owned) btnHtml = '<button class="cat-btn blue" onclick="showTab(\'inventory\')">Owned (Open Inventory)</button>';
     else if (item.offsale) btnHtml = '<button class="cat-btn gray" disabled>Offsale</button>';
-    else if (guest) btnHtml = '<button class="cat-btn gray" onclick="alert(\'Guest accounts cannot buy items. Sign up for an account!\')">Guests Cannot Buy</button>';
+    else if (guest) btnHtml = '<button class="cat-btn gray" onclick="alert(\'Log in or sign up for a normal account to buy items!\')">Account Required</button>';
     else btnHtml = '<button class="cat-btn" onclick="buyCatalogItem(\'' + item.id + '\')">Buy (' + item.price + ' R$)</button>';
     return '<div class="game-card"><div class="thumb-wrap"><img src="' + item.img + '" alt="' + item.name + '"></div><div class="game-title">' + item.name + '</div>' + priceHtml + btnHtml + '</div>';
   }).join('');
 }
 function buyCatalogItem(id) {
-  if (isGuestName(currentUser)) { alert('Guest accounts cannot buy items!'); return; }
+  if (isGuestName(currentUser) || currentUser === 'Visitor') { alert('Only normal accounts can buy items!'); return; }
   const item = CATALOG_ITEMS.find(x => x.id === id);
   if (!item || item.offsale) return;
   const users = getUsers(), me = users[currentUser];
@@ -508,7 +521,7 @@ function renderInventory() {
   }).join('');
 }
 function toggleEquip(id) {
-  if (isGuestName(currentUser)) return;
+  if (isGuestName(currentUser) || currentUser === 'Visitor') return;
   const users = getUsers(), me = users[currentUser];
   if (!me || !me.inv.includes(id)) return;
   me.equipped = (me.equipped === id) ? null : id;
@@ -516,17 +529,19 @@ function toggleEquip(id) {
 }
 function render() {
   if (checkBan()) return;
-  const users = getUsers(), isPriv = isPrivileged(currentUser), isCurGuest = isGuestName(currentUser);
+  const users = getUsers(), isPriv = isPrivileged(currentUser), isCurGuest = isGuestName(currentUser), isVisitor = currentUser === 'Visitor';
+  if (!users[viewingUser]) viewingUser = 'Fedora';
   const isViewingOwner = viewingUser === 'Fedora', isViewingRoblox = viewingUser === 'ROBLOX';
   const showNameBadges = isViewingOwner || isViewingRoblox;
   const curData = users[currentUser] || { robux: '0', tix: '0', friends: [] };
-  const viewData = users[viewingUser] || { bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [] };
+  const viewData = users[viewingUser] || { bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: '21/11/2026', friends: [], followers: [] };
   document.title = viewingUser + ' - FEDORA';
   $('profile-name').textContent = viewingUser;
   $('about-heading').textContent = 'About ' + viewingUser;
   $('profile-avatar').src = getAvatarSrc(viewingUser, viewData);
   $('nav-robux').textContent = curData.robux || '0';
   $('nav-tix').textContent = curData.tix || '0';
+  $('join-date').textContent = viewData.joined || '21/11/2026';
   $('stat-robux').textContent = viewData.robux || '0';
   $('stat-tix').textContent = viewData.tix || '0';
   $('stat-friends').textContent = viewData.friends.length;
@@ -539,9 +554,9 @@ function render() {
   $('return-admin-btn').classList.toggle('hidden', !localStorage.getItem('fedora_saved_admin'));
   $('featured-games-grid').classList.toggle('hidden', !showNameBadges);
   $('no-creations-msg').classList.toggle('hidden', showNameBadges);
-  $('bio-btn').classList.toggle('hidden', !(viewingUser === currentUser && !isCurGuest));
-  $('auth-btn').textContent = isCurGuest ? currentUser + ' • Log In / Sign Up' : 'Log Out (' + currentUser + ')';
-  const showSocial = viewingUser !== currentUser && !isCurGuest && !isGuestName(viewingUser);
+  $('bio-btn').classList.toggle('hidden', !(viewingUser === currentUser && !isCurGuest && !isVisitor));
+  $('auth-btn').textContent = isVisitor ? 'Log In / Sign Up' : 'Log Out (' + currentUser + ')';
+  const showSocial = viewingUser !== currentUser && !isVisitor && !isCurGuest && !isGuestName(viewingUser);
   $('social-actions').classList.toggle('hidden', !showSocial);
   if (showSocial) {
     const isFr = curData.friends.includes(viewingUser);
@@ -560,7 +575,7 @@ function render() {
   if (!$('tab-inventory').classList.contains('hidden')) renderInventory();
 }
 function toggleFriend() {
-  if (isGuestName(currentUser) || isGuestName(viewingUser)) return;
+  if (currentUser === 'Visitor' || isGuestName(currentUser) || isGuestName(viewingUser)) return;
   const users = getUsers(), me = users[currentUser], them = users[viewingUser];
   if (!me || !them) return;
   const idx = me.friends.indexOf(viewingUser);
@@ -569,7 +584,7 @@ function toggleFriend() {
   saveUsers(users); render();
 }
 function toggleFollow() {
-  if (isGuestName(currentUser) || isGuestName(viewingUser)) return;
+  if (currentUser === 'Visitor' || isGuestName(currentUser) || isGuestName(viewingUser)) return;
   const users = getUsers(), them = users[viewingUser];
   if (!them) return;
   const idx = them.followers.indexOf(currentUser);
@@ -595,17 +610,29 @@ function sendFriendChat() {
   localStorage.setItem('fedora_chats', JSON.stringify(all));
   inp.value = ''; renderChatMessages();
 }
-function viewMyProfile() { viewingUser = currentUser; render(); showTab('about'); }
+function viewMyProfile() { viewingUser = currentUser === 'Visitor' ? 'Fedora' : currentUser; render(); showTab('about'); }
 function createGuestAccount() {
-  const g = nextGuestName();
-  currentUser = g; viewingUser = g;
-  localStorage.setItem('fedora_logged_user', g); localStorage.removeItem('fedora_saved_admin');
+  const today = todayStr();
+  if (localStorage.getItem('fedora_last_guest_day') === today) {
+    $('auth-err').textContent = 'Limit reached: You can only create 1 Guest account per day!';
+    return;
+  }
+  const u = getUsers();
+  let n = parseInt(localStorage.getItem('fedora_guest_counter') || '1', 10);
+  while (u['Guest ' + n]) n++;
+  localStorage.setItem('fedora_guest_counter', String(n + 1));
+  localStorage.setItem('fedora_last_guest_day', today);
+  const name = 'Guest ' + n;
+  u[name] = { pass: '', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: today, friends: [], followers: [], inv: [], equipped: null, isGuest: true };
+  saveUsers(u);
+  currentUser = name; viewingUser = name;
+  localStorage.setItem('fedora_logged_user', name); localStorage.removeItem('fedora_saved_admin');
   closeAuth(); render(); showTab('about');
 }
 function openAuth() {
-  if (!isGuestName(currentUser)) {
-    const g = nextGuestName();
-    currentUser = g; viewingUser = g; localStorage.setItem('fedora_logged_user', g); localStorage.removeItem('fedora_saved_admin');
+  if (currentUser !== 'Visitor') {
+    currentUser = 'Visitor'; viewingUser = 'Fedora';
+    localStorage.removeItem('fedora_logged_user'); localStorage.removeItem('fedora_saved_admin');
     render(); return;
   }
   isSignUp = false; $('auth-title').textContent = 'Log In to FEDORA'; $('auth-submit-btn').textContent = 'Log In';
@@ -635,14 +662,19 @@ function submitAuth() {
   const u = censorText(rawU);
   if (u.includes('#')) { $('auth-err').textContent = 'Username blocked by FEDORA filter.'; return; }
   if (isSignUp) {
-    if (u.toLowerCase() === 'fedora' || u.toLowerCase() === 'player' || isGuestName(u) || u.toUpperCase() === 'ROBLOX' || taken) {
+    const today = todayStr();
+    if (localStorage.getItem('fedora_last_signup_day') === today) {
+      $('auth-err').textContent = 'Limit reached: You can only create 1 account per day!'; return;
+    }
+    if (u.toLowerCase() === 'fedora' || u.toLowerCase() === 'player' || u.toLowerCase() === 'visitor' || isGuestName(u) || u.toUpperCase() === 'ROBLOX' || taken) {
       $('auth-err').textContent = 'That username is already in use!'; return;
     }
     const code = $('auth-discord-code').value.trim().toLowerCase();
     if (code !== DISCORD_CODE) {
       $('auth-err').textContent = 'Wrong Discord code! Join the server to get it.'; return;
     }
-    users[u] = { pass: p, bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null }; saveUsers(users);
+    users[u] = { pass: p, bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: today, friends: [], followers: [], inv: [], equipped: null };
+    saveUsers(users); localStorage.setItem('fedora_last_signup_day', today);
     currentUser = u; viewingUser = u; localStorage.setItem('fedora_logged_user', u); closeAuth(); render();
   } else {
     if (!taken || isGuestName(taken) || users[taken].pass !== p) { $('auth-err').textContent = 'Invalid username or password.'; return; }
@@ -657,7 +689,7 @@ function searchUser() {
   render(); showTab('about');
 }
 async function toggleBioEdit() {
-  if (isGuestName(currentUser)) return;
+  if (isGuestName(currentUser) || currentUser === 'Visitor') return;
   const tx = $('bio-text'), ip = $('bio-input'), bt = $('bio-btn');
   if (ip.classList.contains('hidden')) {
     ip.value = tx.textContent; tx.classList.add('hidden'); ip.classList.remove('hidden'); bt.textContent = 'Save'; ip.focus();
@@ -670,13 +702,13 @@ async function toggleBioEdit() {
     renderSidebarUsers();
   }
 }
-function admMsg(m) { $('admin-status').textContent = m; }
+function admMsg(m) { document.getElementById('admin-status').textContent = m; }
 function adminImpersonate() {
   if (!isPrivileged(currentUser)) return;
-  const target = $('adm-login-user').value.trim(); if (!target) return;
+  const target = document.getElementById('adm-login-user').value.trim(); if (!target) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase());
   const finalName = match || target;
-  if (!users[finalName]) users[finalName] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
+  if (!users[finalName]) users[finalName] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: todayStr(), friends: [], followers: [], inv: [], equipped: null };
   saveUsers(users);
   if (!localStorage.getItem('fedora_saved_admin')) localStorage.setItem('fedora_saved_admin', currentUser);
   currentUser = finalName; viewingUser = finalName; localStorage.setItem('fedora_logged_user', finalName); render(); showTab('about');
@@ -688,16 +720,18 @@ function returnToAdmin() {
 }
 function adminSetCurrency() {
   if (!isPrivileged(currentUser)) return;
-  const target = $('adm-curr-user').value.trim(); if (!target || isGuestName(target)) return;
+  const target = document.getElementById('adm-curr-user').value.trim(); if (!target || isGuestName(target)) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
-  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
-  if ($('adm-robux-val').value.trim()) users[match].robux = $('adm-robux-val').value.trim();
-  if ($('adm-tix-val').value.trim()) users[match].tix = $('adm-tix-val').value.trim();
+  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: todayStr(), friends: [], followers: [], inv: [], equipped: null };
+  const rVal = document.getElementById('adm-robux-val').value.trim();
+  const tVal = document.getElementById('adm-tix-val').value.trim();
+  if (rVal) users[match].robux = rVal;
+  if (tVal) users[match].tix = tVal;
   saveUsers(users); render(); admMsg('Updated currency for ' + match);
 }
 function renderBannedList() {
   const users = getUsers(), banned = Object.keys(users).filter(k => users[k].ban);
-  $('banned-list-box').innerHTML = banned.length ? '<strong>Banned:</strong> ' + banned.map(b => '<button class="adm-btn" style="padding:2px 6px;margin:2px;" onclick="quickUnban(\'' + b + '\')">Unban ' + b + '</button>').join('') : 'No active bans.';
+  document.getElementById('banned-list-box').innerHTML = banned.length ? '<strong>Banned:</strong> ' + banned.map(b => '<button class="adm-btn" style="padding:2px 6px;margin:2px;" onclick="quickUnban(\'' + b + '\')">Unban ' + b + '</button>').join('') : 'No active bans.';
 }
 function quickUnban(name) {
   const users = getUsers();
@@ -705,33 +739,45 @@ function quickUnban(name) {
 }
 function adminBanUser() {
   if (!isPrivileged(currentUser)) return;
-  const target = $('adm-ban-user').value.trim();
+  const target = document.getElementById('adm-ban-user').value.trim();
   if (!target) { admMsg('Type a username first!'); return; }
-  if (isPrivileged(target)) { admMsg('Cannot ban Fedora or ROBLOX.'); return; }
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
-  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
-  const unit = $('adm-ban-unit').value, amt = parseFloat($('adm-ban-time').value) || 1;
+  const unit = document.getElementById('adm-ban-unit').value, amt = parseFloat(document.getElementById('adm-ban-time').value) || 1;
+  if (unit === 'perm' && !isPrivileged(match)) {
+    delete users[match];
+    Object.values(users).forEach(acc => {
+      acc.friends = (acc.friends || []).filter(x => x !== match);
+      acc.followers = (acc.followers || []).filter(x => x !== match);
+    });
+    saveUsers(users);
+    if (viewingUser === match) viewingUser = 'Fedora';
+    render(); renderBannedList();
+    admMsg('Permanently deleted & wiped ' + match + ' from FEDORA!');
+    return;
+  }
+  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: todayStr(), friends: [], followers: [], inv: [], equipped: null };
   const mult = unit === 'mins' ? 60000 : (unit === 'days' ? 86400000 : 3600000);
   const until = unit === 'perm' ? 'perm' : Date.now() + amt * mult;
   const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c==='x'?r:(r&0x3|0x8)).toString(16); });
   users[match].ban = {
-    reason: $('adm-ban-reason').value.trim() || 'Other',
-    note: $('adm-ban-note').value.trim() || 'Behavior is against our rules at FEDORA.',
-    item: $('adm-ban-item').value.trim() || 'Account activity',
+    reason: document.getElementById('adm-ban-reason').value.trim() || 'Other',
+    note: document.getElementById('adm-ban-note').value.trim() || 'Behavior is against our rules at FEDORA.',
+    item: document.getElementById('adm-ban-item').value.trim() || 'Account activity',
     date: new Date().toLocaleString('en-US', { month:'long', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' }),
     uuid, until
   };
   saveUsers(users); renderBannedList(); admMsg('Banned ' + match + '!');
+  if (currentUser === match) render();
 }
 function adminUnbanUser() {
   if (!isPrivileged(currentUser)) return;
-  const target = $('adm-ban-user').value.trim(), users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase());
+  const target = document.getElementById('adm-ban-user').value.trim(), users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase());
   if (match && users[match].ban) { delete users[match].ban; saveUsers(users); renderBannedList(); admMsg('Unbanned ' + match); }
   else admMsg('No active ban found for ' + target);
 }
 function adminRenameUser() {
   if (!isPrivileged(currentUser)) return;
-  const oldN = $('adm-old-name').value.trim(), newN = $('adm-new-name').value.trim();
+  const oldN = document.getElementById('adm-old-name').value.trim(), newN = document.getElementById('adm-new-name').value.trim();
   if (!oldN || !newN || isPrivileged(oldN) || isPrivileged(newN) || isGuestName(oldN)) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === oldN.toLowerCase());
   if (!match) { admMsg('User not found.'); return; }
@@ -741,16 +787,16 @@ function adminRenameUser() {
 }
 async function adminSetBio(del) {
   if (!isPrivileged(currentUser)) return;
-  const target = $('adm-bio-user').value.trim(); if (!target) return;
+  const target = document.getElementById('adm-bio-user').value.trim(); if (!target) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
-  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
-  const val = del ? '[ Content Deleted ]' : (censorText($('adm-bio-text').value.trim()) || '[ Content Deleted ]');
+  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: todayStr(), friends: [], followers: [], inv: [], equipped: null };
+  const val = del ? '[ Content Deleted ]' : (censorText(document.getElementById('adm-bio-text').value.trim()) || '[ Content Deleted ]');
   users[match].bio = val; saveUsers(users);
   if (match === 'Fedora') await saveGlobalOwnerBio(val);
   render(); admMsg('Updated bio for ' + match);
 }
 setInterval(() => {
-  if (currentUser === 'Fedora' || isGuestName(currentUser)) return;
+  if (currentUser === 'Fedora' || currentUser === 'Visitor' || isGuestName(currentUser)) return;
   const users = getUsers(), me = users[currentUser];
   if (!me) return;
   const curR = parseInt(String(me.robux).replace(/[^0-9]/g, ''), 10);
