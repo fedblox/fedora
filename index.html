@@ -732,114 +732,35 @@ function toggleBioEdit() {
     renderSidebarUsers();
   }
 }
-function admMsg(m) { document.getElementById('admin-status').textContent = m; }
-function adminImpersonate() {
-  if (!isPrivileged(currentUser)) return;
-  const target = document.getElementById('adm-login-user').value.trim(); if (!target) return;
-  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase());
-  const finalName = match || target;
-  if (!users[finalName]) users[finalName] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: todayStr(), friends: [], followers: [], inv: [], equipped: null };
-  saveUsers(users);
-  if (!localStorage.getItem('fedora_saved_admin')) localStorage.setItem('fedora_saved_admin', currentUser);
-  currentUser = finalName; viewingUser = finalName; localStorage.setItem('fedora_logged_user', finalName); render(); showTab('about');
-}
-function returnToAdmin() {
-  const adm = localStorage.getItem('fedora_saved_admin'); if (!adm) return;
-  localStorage.removeItem('fedora_saved_admin');
-  currentUser = adm; viewingUser = adm; localStorage.setItem('fedora_logged_user', adm); render(); showTab('admin');
-}
-function adminSetCurrency() {
-  if (!isPrivileged(currentUser)) return;
-  const target = document.getElementById('adm-curr-user').value.trim(); if (!target || isGuestName(target)) return;
-  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
-  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: todayStr(), friends: [], followers: [], inv: [], equipped: null };
-  const rVal = document.getElementById('adm-robux-val').value.trim();
-  const tVal = document.getElementById('adm-tix-val').value.trim();
-  if (rVal) users[match].robux = rVal;
-  if (tVal) users[match].tix = tVal;
-  saveUsers(users); render(); admMsg('Updated currency for ' + match);
-}
-function renderBannedList() {
-  const users = getUsers(), banned = Object.keys(users).filter(k => users[k].ban);
-  document.getElementById('banned-list-box').innerHTML = banned.length ? '<strong>Banned:</strong> ' + banned.map(b => '<button class="adm-btn" style="padding:2px 6px;margin:2px;" onclick="quickUnban(\'' + b + '\')">Unban ' + b + '</button>').join('') : 'No active bans.';
-}
-function quickUnban(name) {
-  const users = getUsers();
-  if (users[name]) { delete users[name].ban; saveUsers(users); admMsg('Unbanned ' + name); renderBannedList(); }
-}
-function adminBanUser() {
-  if (!isPrivileged(currentUser)) return;
-  const target = document.getElementById('adm-ban-user').value.trim();
-  if (!target) { admMsg('Type a username first!'); return; }
-  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
-  const unit = document.getElementById('adm-ban-unit').value, amt = parseFloat(document.getElementById('adm-ban-time').value) || 1;
-  if (unit === 'perm' && !isPrivileged(match)) {
-    delete users[match];
-    Object.values(users).forEach(acc => {
-      acc.friends = (acc.friends || []).filter(x => x !== match);
-      acc.followers = (acc.followers || []).filter(x => x !== match);
-    });
-    saveUsers(users, true);
-    pushGlobalState(match);
-    if (viewingUser === match) viewingUser = 'Fedora';
-    render(); renderBannedList();
-    admMsg('Permanently deleted & wiped ' + match + ' from FEDORA!');
-    return;
-  }
-  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: todayStr(), friends: [], followers: [], inv: [], equipped: null };
-  const mult = unit === 'mins' ? 60000 : (unit === 'days' ? 86400000 : 3600000);
-  const until = unit === 'perm' ? 'perm' : Date.now() + amt * mult;
-  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c==='x'?r:(r&0x3|0x8)).toString(16); });
-  users[match].ban = {
-    reason: document.getElementById('adm-ban-reason').value.trim() || 'Other',
-    note: document.getElementById('adm-ban-note').value.trim() || 'Behavior is against our rules at FEDORA.',
-    item: document.getElementById('adm-ban-item').value.trim() || 'Account activity',
-    date: new Date().toLocaleString('en-US', { month:'long', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' }),
-    uuid, until
-  };
-  saveUsers(users); renderBannedList(); admMsg('Banned ' + match + '!');
-  if (currentUser === match) render();
-}
-function adminUnbanUser() {
+async function adminUnbanUser() {
   if (!isPrivileged(currentUser)) return;
   const target = document.getElementById('adm-ban-user').value.trim(), users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase());
   if (match && users[match].ban) { delete users[match].ban; saveUsers(users); renderBannedList(); admMsg('Unbanned ' + match); }
-  else admMsg('No active ban found for ' + target);
+  else admMsg('Cleared ' + target + ' from ban/wipe list.');
+  try {
+    const r = await fetch('https://jsonbin.io' + JSONBIN_ID + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
+    const data = await r.json(), rec = (data && data.record) || {};
+    const del = (rec.deleted || []).filter(x => x.toLowerCase() !== target.toLowerCase());
+    await fetch('https://jsonbin.io' + JSONBIN_ID, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+      body: JSON.stringify(Object.assign({}, rec, { deleted: del }))
+    });
+  } catch (e) {}
 }
-function adminRenameUser() {
+async function adminUnbanUser() {
   if (!isPrivileged(currentUser)) return;
-  const oldN = document.getElementById('adm-old-name').value.trim(), newN = document.getElementById('adm-new-name').value.trim();
-  if (!oldN || !newN || isPrivileged(oldN) || isPrivileged(newN) || isGuestName(oldN)) return;
-  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === oldN.toLowerCase());
-  if (!match) { admMsg('User not found.'); return; }
-  users[newN] = users[match]; delete users[match];
-  saveUsers(users, true); pushGlobalState(match);
-  if (viewingUser === match) viewingUser = newN;
-  render(); admMsg('Renamed ' + match + ' to ' + newN);
+  const target = document.getElementById('adm-ban-user').value.trim(), users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase());
+  if (match && users[match].ban) { delete users[match].ban; saveUsers(users); renderBannedList(); admMsg('Unbanned ' + match); }
+  else admMsg('Cleared ' + target + ' from ban/wipe list.');
+  try {
+    const r = await fetch('https://jsonbin.io' + JSONBIN_ID + '/latest', { headers: { 'X-Master-Key': JSONBIN_KEY } });
+    const data = await r.json(), rec = (data && data.record) || {};
+    const del = (rec.deleted || []).filter(x => x.toLowerCase() !== target.toLowerCase());
+    await fetch('https://jsonbin.io' + JSONBIN_ID, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+      body: JSON.stringify(Object.assign({}, rec, { deleted: del }))
+    });
+  } catch (e) {}
 }
-function adminSetBio(del) {
-  if (!isPrivileged(currentUser)) return;
-  const target = document.getElementById('adm-bio-user').value.trim(); if (!target) return;
-  const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
-  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', joined: todayStr(), friends: [], followers: [], inv: [], equipped: null };
-  const val = del ? '[ Content Deleted ]' : (censorText(document.getElementById('adm-bio-text').value.trim()) || '[ Content Deleted ]');
-  users[match].bio = val; saveUsers(users);
-  render(); admMsg('Updated bio for ' + match);
-}
-setInterval(() => {
-  if (currentUser === 'Fedora' || currentUser === 'Visitor' || isGuestName(currentUser)) return;
-  const users = getUsers(), me = users[currentUser];
-  if (!me) return;
-  const curR = parseInt(String(me.robux).replace(/[^0-9]/g, ''), 10);
-  const curT = parseInt(String(me.tix).replace(/[^0-9]/g, ''), 10);
-  me.robux = String((isNaN(curR) ? 0 : curR) + 10);
-  me.tix = String((isNaN(curT) ? 0 : curT) + 2);
-  saveUsers(users);
-  render();
-}, 60000);
-setInterval(syncFromCloud, 8000);
-render();
-syncFromCloud();
-</script>
-</body>
-</html>
