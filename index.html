@@ -21,7 +21,16 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
 .curr-item { display: flex; align-items: center; gap: 5px; }
 .curr-icon { width: 18px; height: 18px; object-fit: contain; }
 .auth-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.45); color: #fff; font-size: 12px; font-weight: bold; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
-.container { width: 920px; max-width: 96%; margin: 20px auto; }
+.page-layout { width: 1180px; max-width: 97%; margin: 20px auto; display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+.users-sidebar { width: 255px; flex-shrink: 0; background: #fff; border: 1px solid #ccc; padding: 14px; }
+.users-sidebar h3 { margin: 0 0 10px; font-size: 15px; color: #1f65b3; border-bottom: 2px solid #1f65b3; padding-bottom: 6px; }
+.user-list-scroll { max-height: 640px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.user-row-card { border: 1px solid #dcdcdc; background: #f9f9f9; padding: 8px 10px; border-radius: 3px; cursor: pointer; }
+.user-row-card:hover { background: #eef5ff; border-color: #1f65b3; }
+.user-row-name { font-weight: bold; font-size: 13px; color: #1f65b3; }
+.user-row-bio { font-size: 11px; color: #555; margin: 3px 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-row-curr { display: flex; gap: 10px; font-size: 11px; font-weight: bold; }
+.container { flex: 1; min-width: 300px; }
 .card { background: #fff; border: 1px solid #ccc; padding: 18px; margin-bottom: 16px; }
 .profile-top { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
 .avatar-box { width: 180px; height: 180px; border: 1px solid #d4d4d4; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -80,11 +89,13 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
 .chat-row { display: flex; gap: 6px; }
 .chat-row input { flex: 1; padding: 8px; border: 1px solid #bbb; border-radius: 3px; }
 .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; z-index: 999; padding-top: 24px; }
-.modal-box { position: relative; background: #fff; border: 2px solid #999; width: 320px; max-width: 92%; padding: 38px 22px 20px; border-radius: 26px; box-shadow: 0 6px 20px rgba(0,0,0,0.35); text-align: center; }
+.modal-box { position: relative; background: #fff; border: 2px solid #999; width: 335px; max-width: 94%; padding: 36px 20px 18px; border-radius: 26px; box-shadow: 0 6px 20px rgba(0,0,0,0.35); text-align: center; }
 .modal-logo { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); height: 52px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
-.modal-box input { width: 100%; padding: 12px 16px; margin-bottom: 14px; border: 2px solid #aaa; border-radius: 22px; font-size: 16px; text-align: center; outline: none; }
-.modal-submit { width: 100%; background: linear-gradient(#2eb82e, #1f8c1f); border: 1px solid #176b17; color: #fff; padding: 10px; font-size: 15px; font-weight: bold; cursor: pointer; border-radius: 22px; margin-bottom: 10px; }
-.modal-pill-btn { width: 100%; background: #f5f5f5; border: 2px solid #aaa; color: #333; padding: 9px 14px; font-size: 14px; font-weight: bold; border-radius: 22px; cursor: pointer; }
+.modal-box input { width: 100%; padding: 10px 14px; margin-bottom: 10px; border: 2px solid #aaa; border-radius: 22px; font-size: 15px; text-align: center; outline: none; }
+.modal-submit { width: 100%; background: linear-gradient(#2eb82e, #1f8c1f); border: 1px solid #176b17; color: #fff; padding: 10px; font-size: 15px; font-weight: bold; cursor: pointer; border-radius: 22px; margin-bottom: 8px; }
+.modal-pill-btn { width: 100%; background: #f5f5f5; border: 2px solid #aaa; color: #333; padding: 8px 14px; font-size: 13px; font-weight: bold; border-radius: 22px; cursor: pointer; margin-bottom: 8px; }
+.discord-box { background: #eef1ff; border: 1px solid #5865F2; border-radius: 14px; padding: 10px; margin-bottom: 10px; }
+.discord-btn { width: 100%; background: #5865F2; color: #fff; border: none; padding: 8px; border-radius: 16px; font-weight: bold; font-size: 13px; cursor: pointer; margin-bottom: 8px; }
 .ban-wrap { min-height: 100vh; background: #f7f8fa; padding: 24px 12px; display: flex; justify-content: center; align-items: flex-start; }
 .ban-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 16px; width: 460px; max-width: 100%; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
 .ban-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
@@ -143,19 +154,24 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
     </div>
   </div>
   <div class="currency-bar">
-    <span class="curr-item" style="color:#66ff66;"><img class="curr-icon" src="IMG_1960.png" alt="R$"><span id="nav-robux">?</span></span>
-    <span class="curr-item" style="color:#ffcc33;"><img class="curr-icon" src="IMG_1961.png" alt="Tix"><span id="nav-tix">?</span></span>
+    <span class="curr-item" style="color:#66ff66;"><img class="curr-icon" src="IMG_1960.png" alt="R$"><span id="nav-robux">0</span></span>
+    <span class="curr-item" style="color:#ffcc33;"><img class="curr-icon" src="IMG_1961.png" alt="Tix"><span id="nav-tix">0</span></span>
     <button id="return-admin-btn" class="auth-btn hidden" style="background:#b30000;" onclick="returnToAdmin()">Return to Admin</button>
     <button id="auth-btn" class="auth-btn" onclick="openAuth()">Log In / Sign Up</button>
   </div>
 </div>
+<div class="page-layout">
+<aside class="users-sidebar">
+  <h3>All FEDORA Users</h3>
+  <div id="all-users-list" class="user-list-scroll"></div>
+</aside>
 <div class="container">
   <div class="card">
     <div class="profile-top">
       <div class="avatar-box"><img id="profile-avatar" src="IMG_1942.png" alt="Avatar"></div>
       <div class="profile-info">
         <div class="username-row">
-          <h1 class="username" id="profile-name">Player</h1>
+          <h1 class="username" id="profile-name">Guest 1</h1>
           <img id="badge-verified" class="verified-badge hidden" src="IMG_1952.png" alt="Verified">
           <img id="badge-owner-f" class="verified-badge hidden" src="F-21-11-2026.png" alt="FEDORA">
           <img id="badge-owner-3" class="verified-badge hidden" src="IMG_1968.png" alt="Builder">
@@ -173,9 +189,9 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
         <div class="stats-grid">
           <div><div class="stat-label">Friends</div><div class="stat-val" id="stat-friends">0</div></div>
           <div><div class="stat-label">Followers</div><div class="stat-val" id="stat-followers">0</div></div>
-          <div><div class="stat-label">Join Date</div><div class="stat-val" id="join-date">21/11/2026</div></div>
-          <div><div class="stat-label">Robux</div><div class="stat-val" id="stat-robux">?</div></div>
-          <div><div class="stat-label">Tix</div><div class="stat-val" id="stat-tix">?</div></div>
+          <div><div class="stat-label">Join Date</div><div class="stat-val" id="join-date">22/11/2026</div></div>
+          <div><div class="stat-label">Robux</div><div class="stat-val" id="stat-robux">0</div></div>
+          <div><div class="stat-label">Tix</div><div class="stat-val" id="stat-tix">0</div></div>
         </div>
       </div>
     </div>
@@ -190,7 +206,7 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
     <button id="btn-admin" class="tab-btn admin-tab hidden" onclick="showTab('admin')">Admin Panel</button>
   </div>
   <div id="tab-about" class="tab-content">
-    <h3 id="about-heading" style="margin-top:0;">About Player</h3>
+    <h3 id="about-heading" style="margin-top:0;">About Guest 1</h3>
     <p id="about-bio" style="color:#b30000;font-weight:bold;">[ Content Deleted ]</p>
     <div id="friend-chat-panel" class="chat-box hidden">
       <strong style="color:#1f65b3;">Friend Chat with <span id="chat-target-name"></span></strong>
@@ -284,21 +300,28 @@ body { margin: 0; background: #e3e3e3; color: #343434; }
   </div>
 </div>
 </div>
+</div>
 <div id="auth-modal" class="modal-bg hidden">
   <div class="modal-box">
     <img class="modal-logo" src="FED-RA-21-11-2026.png" alt="FEDORA">
-    <div id="auth-title" style="font-size:14px;font-weight:bold;color:#1f65b3;margin-bottom:12px;">Log In to FEDORA</div>
+    <div id="auth-title" style="font-size:14px;font-weight:bold;color:#1f65b3;margin-bottom:10px;">Log In to FEDORA</div>
     <input id="auth-user" type="text" placeholder="Username">
     <input id="auth-pass" type="password" placeholder="Password">
-    <div id="auth-err" style="color:#b30000;font-size:12px;margin-bottom:10px;font-weight:bold;"></div>
+    <div id="discord-gate" class="discord-box hidden">
+      <div style="font-size:11px;font-weight:bold;color:#2c3568;margin-bottom:6px;">Join our Discord server to get the Sign-Up code:</div>
+      <button type="button" class="discord-btn" onclick="openDiscordInvite()">Join Discord Server</button>
+      <input id="auth-discord-code" type="text" placeholder="Enter Server Code" style="margin-bottom:0;background:#fff;">
+    </div>
+    <div id="auth-err" style="color:#b30000;font-size:12px;margin-bottom:8px;font-weight:bold;"></div>
     <button id="auth-submit-btn" class="modal-submit" onclick="submitAuth()">Log In</button>
     <button id="auth-toggle-link" class="modal-pill-btn" onclick="toggleAuthMode()">no acc signup</button>
-    <div style="margin-top:10px;"><a href="#" onclick="closeAuth();return false;" style="font-size:12px;color:#666;text-decoration:none;">Close</a></div>
+    <button id="guest-create-btn" class="modal-pill-btn" style="background:#e8f4ff;border-color:#1f65b3;color:#1f65b3;" onclick="createGuestAccount()">Create Guest Account</button>
+    <div style="margin-top:4px;"><a href="#" onclick="closeAuth();return false;" style="font-size:12px;color:#666;text-decoration:none;">Close</a></div>
   </div>
-</div>
 <script>
 const OWNER_NAME = 'Fedora';
 const OWNER_PASS = 'gtagMODDING';
+const DISCORD_CODE = 'zzyfxx';
 const JSONBIN_ID = '6b020479ffd5d16053d470a0';
 const JSONBIN_KEY = '$2a$10$FhFcxuLQJw8ubWGn5U2LLOpPb.VbWyNgBH.i/druD9pa.dE8hf5YC';
 const BAD_WORDS = ['nigger','retard','fedora is bad','fedora is ai','fedora is vibe coded'];
@@ -310,12 +333,14 @@ const $ = id => document.getElementById(id);
 const d = new Date();
 $('join-date').textContent = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
 let isSignUp = false;
-let currentUser = localStorage.getItem('fedora_logged_user') || 'Player';
-let viewingUser = currentUser;
 let globalOwnerBio = localStorage.getItem('fedora_owner_bio') || '[ Content Deleted ]';
 
 function openWebPlay() { window.open('https://' + 'wb.site.je/?i=1', '_blank', 'noopener'); }
 function openGofile(code) { window.open('https://' + 'gofile.io/d/' + code, '_blank', 'noopener'); }
+function openDiscordInvite() { window.open('https://' + 'discord.gg/PvskeVkWYV', '_blank', 'noopener'); }
+function isGuestName(name) { return /^Guest \d+$/i.test(name || ''); }
+function isPrivileged(name) { return name === 'Fedora' || name === 'ROBLOX'; }
+
 function censorText(str) {
   let out = str;
   BAD_WORDS.forEach(w => {
@@ -326,14 +351,15 @@ function censorText(str) {
 }
 function getUsers() {
   const u = JSON.parse(localStorage.getItem('fedora_accounts') || '{}');
+  delete u['Player'];
   if (!u['Fedora']) u['Fedora'] = { pass: OWNER_PASS, bio: globalOwnerBio, robux: '83.5M', tix: '45K', friends: [], followers: [], inv: ['invis_shaggy','owner_fit'], equipped: 'owner_fit' };
-  if (!u['ROBLOX']) u['ROBLOX'] = { pass: OWNER_PASS, bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
-  if (!u['Player']) u['Player'] = { pass: '', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  if (!u['ROBLOX']) u['ROBLOX'] = { pass: OWNER_PASS, bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
   Object.keys(u).forEach(k => {
     u[k].friends = u[k].friends || [];
     u[k].followers = u[k].followers || [];
     u[k].inv = u[k].inv || [];
-    if (k === 'Fedora') {
+    if (isGuestName(k)) { u[k].robux = '0'; u[k].tix = '0'; u[k].friends = []; u[k].followers = []; u[k].inv = []; u[k].equipped = null; }
+    else if (k === 'Fedora') {
       if (!u[k].inv.includes('invis_shaggy')) u[k].inv.push('invis_shaggy');
       if (!u[k].inv.includes('owner_fit')) u[k].inv.push('owner_fit');
       if (u[k].equipped === undefined) u[k].equipped = 'owner_fit';
@@ -344,7 +370,23 @@ function getUsers() {
   return u;
 }
 function saveUsers(u) { localStorage.setItem('fedora_accounts', JSON.stringify(u)); }
-function isPrivileged(name) { return name === 'Fedora' || name === 'ROBLOX'; }
+function nextGuestName() {
+  const u = getUsers();
+  let n = parseInt(localStorage.getItem('fedora_guest_counter') || '1', 10);
+  while (u['Guest ' + n]) n++;
+  localStorage.setItem('fedora_guest_counter', String(n + 1));
+  const name = 'Guest ' + n;
+  u[name] = { pass: '', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null, isGuest: true };
+  saveUsers(u);
+  return name;
+}
+let currentUser = localStorage.getItem('fedora_logged_user');
+if (!currentUser || currentUser === 'Player') {
+  currentUser = nextGuestName();
+  localStorage.setItem('fedora_logged_user', currentUser);
+}
+let viewingUser = currentUser;
+
 function getAvatarSrc(username, userObj) {
   if (userObj && userObj.equipped === 'invis_shaggy') return 'invisShaggy.png';
   if (username === 'Fedora') return 'IMG_1953.png';
@@ -391,6 +433,19 @@ async function saveGlobalOwnerBio(newBio) {
     });
   } catch (e) {}
 }
+function renderSidebarUsers() {
+  const users = getUsers();
+  $('all-users-list').innerHTML = Object.keys(users).map(name => {
+    const u = users[name];
+    const bio = censorText((u.bio || '[ Content Deleted ]').trim()) || '[ Content Deleted ]';
+    return '<div class="user-row-card" onclick="inspectUser(\'' + name.replace(/'/g, "\\'") + '\')">' +
+      '<div class="user-row-name">' + name + '</div>' +
+      '<div class="user-row-bio">' + bio + '</div>' +
+      '<div class="user-row-curr"><span style="color:#1f8c1f;">R$: ' + (u.robux || '0') + '</span><span style="color:#cc8800;">Tix: ' + (u.tix || '0') + '</span></div>' +
+    '</div>';
+  }).join('');
+}
+function inspectUser(name) { viewingUser = name; render(); showTab('about'); }
 function checkBan() {
   const users = getUsers(), rec = users[currentUser];
   if (rec && rec.ban && !isPrivileged(currentUser)) {
@@ -411,30 +466,31 @@ function checkBan() {
   return false;
 }
 function logoutBanned() {
-  if (currentUser === 'Player') { $('ban-overlay').classList.add('hidden'); $('main-app').classList.remove('hidden'); openAuth(); return; }
-  currentUser = 'Player'; viewingUser = 'Player'; localStorage.removeItem('fedora_logged_user'); render();
+  const g = nextGuestName();
+  currentUser = g; viewingUser = g; localStorage.setItem('fedora_logged_user', g); render();
 }
 function renderCatalog() {
-  const users = getUsers(), me = users[currentUser] || { inv: [] };
+  const users = getUsers(), me = users[currentUser] || { inv: [] }, guest = isGuestName(currentUser);
   $('catalog-grid').innerHTML = CATALOG_ITEMS.map(item => {
     const owned = me.inv.includes(item.id);
     const priceHtml = item.offsale ? '<div class="game-sub offsale">Offsale</div>' : '<div class="game-sub"><img src="IMG_1960.png" style="width:14px;height:14px;"> ' + (currentUser === 'Fedora' ? 'Free (Owner)' : item.price) + '</div>';
     let btnHtml = '';
     if (owned) btnHtml = '<button class="cat-btn blue" onclick="showTab(\'inventory\')">Owned (Open Inventory)</button>';
     else if (item.offsale) btnHtml = '<button class="cat-btn gray" disabled>Offsale</button>';
+    else if (guest) btnHtml = '<button class="cat-btn gray" onclick="alert(\'Guest accounts cannot buy items. Sign up for an account!\')">Guests Cannot Buy</button>';
     else btnHtml = '<button class="cat-btn" onclick="buyCatalogItem(\'' + item.id + '\')">Buy (' + item.price + ' R$)</button>';
     return '<div class="game-card"><div class="thumb-wrap"><img src="' + item.img + '" alt="' + item.name + '"></div><div class="game-title">' + item.name + '</div>' + priceHtml + btnHtml + '</div>';
   }).join('');
 }
 function buyCatalogItem(id) {
-  if (currentUser === 'Player') { openAuth(); return; }
+  if (isGuestName(currentUser)) { alert('Guest accounts cannot buy items!'); return; }
   const item = CATALOG_ITEMS.find(x => x.id === id);
   if (!item || item.offsale) return;
   const users = getUsers(), me = users[currentUser];
   if (me.inv.includes(id)) return;
   if (currentUser !== 'Fedora') {
     const bal = parseFloat(String(me.robux).replace(/[^0-9.]/g, ''));
-    if (isNaN(bal) || bal < item.price) { $('catalog-msg').style.color = '#b30000'; $('catalog-msg').textContent = 'Not enough Robux! (Need ' + item.price + ' R$)'; return; }
+    if (isNaN(bal) || bal < item.price) { $('catalog-msg').style.color = '#b30000'; $('catalog-msg').textContent = 'Not enough Robux! (Need ' + item.price + ' R$ — earn 10 R$ & 2 Tix every minute)'; return; }
     me.robux = String(bal - item.price);
   }
   me.inv.push(id); saveUsers(users);
@@ -452,7 +508,7 @@ function renderInventory() {
   }).join('');
 }
 function toggleEquip(id) {
-  if (currentUser === 'Player') { openAuth(); return; }
+  if (isGuestName(currentUser)) return;
   const users = getUsers(), me = users[currentUser];
   if (!me || !me.inv.includes(id)) return;
   me.equipped = (me.equipped === id) ? null : id;
@@ -460,19 +516,19 @@ function toggleEquip(id) {
 }
 function render() {
   if (checkBan()) return;
-  const users = getUsers(), isPriv = isPrivileged(currentUser);
+  const users = getUsers(), isPriv = isPrivileged(currentUser), isCurGuest = isGuestName(currentUser);
   const isViewingOwner = viewingUser === 'Fedora', isViewingRoblox = viewingUser === 'ROBLOX';
   const showNameBadges = isViewingOwner || isViewingRoblox;
-  const curData = users[currentUser] || { robux: '?', tix: '?', friends: [] };
-  const viewData = users[viewingUser] || { bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [] };
+  const curData = users[currentUser] || { robux: '0', tix: '0', friends: [] };
+  const viewData = users[viewingUser] || { bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [] };
   document.title = viewingUser + ' - FEDORA';
   $('profile-name').textContent = viewingUser;
   $('about-heading').textContent = 'About ' + viewingUser;
   $('profile-avatar').src = getAvatarSrc(viewingUser, viewData);
-  $('nav-robux').textContent = curData.robux || '?';
-  $('nav-tix').textContent = curData.tix || '?';
-  $('stat-robux').textContent = viewData.robux || '?';
-  $('stat-tix').textContent = viewData.tix || '?';
+  $('nav-robux').textContent = curData.robux || '0';
+  $('nav-tix').textContent = curData.tix || '0';
+  $('stat-robux').textContent = viewData.robux || '0';
+  $('stat-tix').textContent = viewData.tix || '0';
   $('stat-friends').textContent = viewData.friends.length;
   $('stat-followers').textContent = viewData.followers.length;
   ['badge-verified','badge-owner-f','badge-owner-3'].forEach(id => $(id).classList.toggle('hidden', !showNameBadges));
@@ -483,11 +539,11 @@ function render() {
   $('return-admin-btn').classList.toggle('hidden', !localStorage.getItem('fedora_saved_admin'));
   $('featured-games-grid').classList.toggle('hidden', !showNameBadges);
   $('no-creations-msg').classList.toggle('hidden', showNameBadges);
-  $('bio-btn').classList.toggle('hidden', !(viewingUser === currentUser && currentUser !== 'Player'));
-  $('auth-btn').textContent = currentUser === 'Player' ? 'Log In / Sign Up' : 'Log Out (' + currentUser + ')';
-  const isOther = viewingUser !== currentUser;
-  $('social-actions').classList.toggle('hidden', !isOther);
-  if (isOther) {
+  $('bio-btn').classList.toggle('hidden', !(viewingUser === currentUser && !isCurGuest));
+  $('auth-btn').textContent = isCurGuest ? currentUser + ' • Log In / Sign Up' : 'Log Out (' + currentUser + ')';
+  const showSocial = viewingUser !== currentUser && !isCurGuest && !isGuestName(viewingUser);
+  $('social-actions').classList.toggle('hidden', !showSocial);
+  if (showSocial) {
     const isFr = curData.friends.includes(viewingUser);
     const isFol = viewData.followers.includes(currentUser);
     $('btn-friend').textContent = isFr ? 'Unfriend' : 'Add Friend';
@@ -499,13 +555,13 @@ function render() {
     else renderChatMessages();
   } else $('friend-chat-panel').classList.add('hidden');
   applyBio(isViewingOwner ? globalOwnerBio : viewData.bio);
+  renderSidebarUsers();
   if (!$('tab-catalog').classList.contains('hidden')) renderCatalog();
   if (!$('tab-inventory').classList.contains('hidden')) renderInventory();
 }
 function toggleFriend() {
-  if (currentUser === 'Player') { openAuth(); return; }
-  const users = getUsers();
-  const me = users[currentUser], them = users[viewingUser];
+  if (isGuestName(currentUser) || isGuestName(viewingUser)) return;
+  const users = getUsers(), me = users[currentUser], them = users[viewingUser];
   if (!me || !them) return;
   const idx = me.friends.indexOf(viewingUser);
   if (idx === -1) { me.friends.push(viewingUser); if (!them.friends.includes(currentUser)) them.friends.push(currentUser); }
@@ -513,7 +569,7 @@ function toggleFriend() {
   saveUsers(users); render();
 }
 function toggleFollow() {
-  if (currentUser === 'Player') { openAuth(); return; }
+  if (isGuestName(currentUser) || isGuestName(viewingUser)) return;
   const users = getUsers(), them = users[viewingUser];
   if (!them) return;
   const idx = them.followers.indexOf(currentUser);
@@ -540,10 +596,21 @@ function sendFriendChat() {
   inp.value = ''; renderChatMessages();
 }
 function viewMyProfile() { viewingUser = currentUser; render(); showTab('about'); }
+function createGuestAccount() {
+  const g = nextGuestName();
+  currentUser = g; viewingUser = g;
+  localStorage.setItem('fedora_logged_user', g); localStorage.removeItem('fedora_saved_admin');
+  closeAuth(); render(); showTab('about');
+}
 function openAuth() {
-  if (currentUser !== 'Player') { currentUser = 'Player'; viewingUser = 'Player'; localStorage.removeItem('fedora_logged_user'); localStorage.removeItem('fedora_saved_admin'); render(); return; }
+  if (!isGuestName(currentUser)) {
+    const g = nextGuestName();
+    currentUser = g; viewingUser = g; localStorage.setItem('fedora_logged_user', g); localStorage.removeItem('fedora_saved_admin');
+    render(); return;
+  }
   isSignUp = false; $('auth-title').textContent = 'Log In to FEDORA'; $('auth-submit-btn').textContent = 'Log In';
-  $('auth-toggle-link').textContent = 'no acc signup'; $('auth-err').textContent = ''; $('auth-user').value = ''; $('auth-pass').value = '';
+  $('auth-toggle-link').textContent = 'no acc signup'; $('discord-gate').classList.add('hidden');
+  $('auth-err').textContent = ''; $('auth-user').value = ''; $('auth-pass').value = ''; $('auth-discord-code').value = '';
   $('auth-modal').classList.remove('hidden');
 }
 function closeAuth() { $('auth-modal').classList.add('hidden'); }
@@ -552,6 +619,7 @@ function toggleAuthMode() {
   $('auth-title').textContent = isSignUp ? 'Create FEDORA Account' : 'Log In to FEDORA';
   $('auth-submit-btn').textContent = isSignUp ? 'Sign Up' : 'Log In';
   $('auth-toggle-link').textContent = isSignUp ? 'have acc login' : 'no acc signup';
+  $('discord-gate').classList.toggle('hidden', !isSignUp);
   $('auth-err').textContent = '';
 }
 function submitAuth() {
@@ -567,11 +635,17 @@ function submitAuth() {
   const u = censorText(rawU);
   if (u.includes('#')) { $('auth-err').textContent = 'Username blocked by FEDORA filter.'; return; }
   if (isSignUp) {
-    if (u.toLowerCase() === 'fedora' || u.toLowerCase() === 'player' || u.toUpperCase() === 'ROBLOX' || taken) { $('auth-err').textContent = 'That username is already in use!'; return; }
-    users[u] = { pass: p, bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null }; saveUsers(users);
+    if (u.toLowerCase() === 'fedora' || u.toLowerCase() === 'player' || isGuestName(u) || u.toUpperCase() === 'ROBLOX' || taken) {
+      $('auth-err').textContent = 'That username is already in use!'; return;
+    }
+    const code = $('auth-discord-code').value.trim().toLowerCase();
+    if (code !== DISCORD_CODE) {
+      $('auth-err').textContent = 'Wrong Discord code! Join the server to get it.'; return;
+    }
+    users[u] = { pass: p, bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null }; saveUsers(users);
     currentUser = u; viewingUser = u; localStorage.setItem('fedora_logged_user', u); closeAuth(); render();
   } else {
-    if (!taken || users[taken].pass !== p) { $('auth-err').textContent = 'Invalid username or password.'; return; }
+    if (!taken || isGuestName(taken) || users[taken].pass !== p) { $('auth-err').textContent = 'Invalid username or password.'; return; }
     currentUser = taken; viewingUser = taken; localStorage.setItem('fedora_logged_user', taken); closeAuth(); render();
   }
 }
@@ -583,6 +657,7 @@ function searchUser() {
   render(); showTab('about');
 }
 async function toggleBioEdit() {
+  if (isGuestName(currentUser)) return;
   const tx = $('bio-text'), ip = $('bio-input'), bt = $('bio-btn');
   if (ip.classList.contains('hidden')) {
     ip.value = tx.textContent; tx.classList.add('hidden'); ip.classList.remove('hidden'); bt.textContent = 'Save'; ip.focus();
@@ -592,6 +667,7 @@ async function toggleBioEdit() {
     const users = getUsers();
     if (viewingUser === 'Fedora') { users['Fedora'].bio = c; saveUsers(users); await saveGlobalOwnerBio(c); }
     else if (users[viewingUser]) { users[viewingUser].bio = c; saveUsers(users); }
+    renderSidebarUsers();
   }
 }
 function admMsg(m) { $('admin-status').textContent = m; }
@@ -600,7 +676,7 @@ function adminImpersonate() {
   const target = $('adm-login-user').value.trim(); if (!target) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase());
   const finalName = match || target;
-  if (!users[finalName]) users[finalName] = { pass: '1234', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  if (!users[finalName]) users[finalName] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
   saveUsers(users);
   if (!localStorage.getItem('fedora_saved_admin')) localStorage.setItem('fedora_saved_admin', currentUser);
   currentUser = finalName; viewingUser = finalName; localStorage.setItem('fedora_logged_user', finalName); render(); showTab('about');
@@ -612,9 +688,9 @@ function returnToAdmin() {
 }
 function adminSetCurrency() {
   if (!isPrivileged(currentUser)) return;
-  const target = $('adm-curr-user').value.trim(); if (!target) return;
+  const target = $('adm-curr-user').value.trim(); if (!target || isGuestName(target)) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
-  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
   if ($('adm-robux-val').value.trim()) users[match].robux = $('adm-robux-val').value.trim();
   if ($('adm-tix-val').value.trim()) users[match].tix = $('adm-tix-val').value.trim();
   saveUsers(users); render(); admMsg('Updated currency for ' + match);
@@ -623,14 +699,17 @@ function renderBannedList() {
   const users = getUsers(), banned = Object.keys(users).filter(k => users[k].ban);
   $('banned-list-box').innerHTML = banned.length ? '<strong>Banned:</strong> ' + banned.map(b => '<button class="adm-btn" style="padding:2px 6px;margin:2px;" onclick="quickUnban(\'' + b + '\')">Unban ' + b + '</button>').join('') : 'No active bans.';
 }
-function quickUnban(name) { const users = getUsers(); if (users[name]) { delete users[name].ban; saveUsers(users); admMsg('Unbanned ' + name); renderBannedList(); } }
+function quickUnban(name) {
+  const users = getUsers();
+  if (users[name]) { delete users[name].ban; saveUsers(users); admMsg('Unbanned ' + name); renderBannedList(); }
+}
 function adminBanUser() {
   if (!isPrivileged(currentUser)) return;
   const target = $('adm-ban-user').value.trim();
   if (!target) { admMsg('Type a username first!'); return; }
   if (isPrivileged(target)) { admMsg('Cannot ban Fedora or ROBLOX.'); return; }
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
-  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
   const unit = $('adm-ban-unit').value, amt = parseFloat($('adm-ban-time').value) || 1;
   const mult = unit === 'mins' ? 60000 : (unit === 'days' ? 86400000 : 3600000);
   const until = unit === 'perm' ? 'perm' : Date.now() + amt * mult;
@@ -653,7 +732,7 @@ function adminUnbanUser() {
 function adminRenameUser() {
   if (!isPrivileged(currentUser)) return;
   const oldN = $('adm-old-name').value.trim(), newN = $('adm-new-name').value.trim();
-  if (!oldN || !newN || isPrivileged(oldN) || isPrivileged(newN)) return;
+  if (!oldN || !newN || isPrivileged(oldN) || isPrivileged(newN) || isGuestName(oldN)) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === oldN.toLowerCase());
   if (!match) { admMsg('User not found.'); return; }
   users[newN] = users[match]; delete users[match]; saveUsers(users);
@@ -664,12 +743,23 @@ async function adminSetBio(del) {
   if (!isPrivileged(currentUser)) return;
   const target = $('adm-bio-user').value.trim(); if (!target) return;
   const users = getUsers(), match = Object.keys(users).find(k => k.toLowerCase() === target.toLowerCase()) || target;
-  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '?', tix: '?', friends: [], followers: [], inv: [], equipped: null };
+  if (!users[match]) users[match] = { pass: '1234', bio: '[ Content Deleted ]', robux: '0', tix: '0', friends: [], followers: [], inv: [], equipped: null };
   const val = del ? '[ Content Deleted ]' : (censorText($('adm-bio-text').value.trim()) || '[ Content Deleted ]');
   users[match].bio = val; saveUsers(users);
   if (match === 'Fedora') await saveGlobalOwnerBio(val);
   render(); admMsg('Updated bio for ' + match);
 }
+setInterval(() => {
+  if (currentUser === 'Fedora' || isGuestName(currentUser)) return;
+  const users = getUsers(), me = users[currentUser];
+  if (!me) return;
+  const curR = parseInt(String(me.robux).replace(/[^0-9]/g, ''), 10);
+  const curT = parseInt(String(me.tix).replace(/[^0-9]/g, ''), 10);
+  me.robux = String((isNaN(curR) ? 0 : curR) + 10);
+  me.tix = String((isNaN(curT) ? 0 : curT) + 2);
+  saveUsers(users);
+  render();
+}, 60000);
 render();
 fetchGlobalOwnerBio();
 </script>
